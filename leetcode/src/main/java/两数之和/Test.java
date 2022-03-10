@@ -1,9 +1,9 @@
 package 两数之和;
 
-import com.alibaba.fastjson.JSONObject;
-import org.apache.commons.collections.MapUtils;
-
-import java.util.*;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Objects;
 
 /**
  * 功能描述:
@@ -20,7 +20,6 @@ public class Test {
         int[] arrays = {2,7,11,15};
         int target = 9;
         int[] ints = twoSum(arrays, target);
-        System.out.println(JSONObject.toJSONString(ints));
     }
 
     public static int[] twoSum(int[] nums, int target) {

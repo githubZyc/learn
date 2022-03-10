@@ -1,5 +1,3 @@
-import com.media.config.leetcode.k个一组链表进行翻转.Test;
-
 import java.util.Objects;
 
 /**
@@ -142,10 +140,6 @@ public class ListNodeTest {
         first.nextNode = secondNode;
         secondNode.nextNode = thirdNode;
         thirdNode.nextNode = null;
-
-        Test nodeTest = new Test();
-//        nodeTest.reverseKGroup()
-//        iteratorNode(head);
     }
 
     private static void iteratorNode(ListNode node) {
