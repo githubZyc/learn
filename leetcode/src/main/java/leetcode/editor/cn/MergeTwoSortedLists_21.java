@@ -49,8 +49,13 @@ public class MergeTwoSortedLists_21 {
         ListNode listNode_2 = new ListNode(2,listNode_3);
         ListNode listNode_1 = new ListNode(1,listNode_2);
 
-        solution.mergeTwoLists(listNode1,listNode_1);
-        System.out.println("Hello world");
+        ListNode listNode = solution.mergeTwoLists(listNode1, listNode_1);
+
+        while (listNode!=null){
+            int val = listNode.val;
+            System.out.println(val);
+            listNode = listNode.next;
+        }
     }
 
     public static class ListNode {
@@ -72,16 +77,36 @@ public class MergeTwoSortedLists_21 {
 
     class Solution {
         public ListNode mergeTwoLists(ListNode list1, ListNode list2) {
-            ListNode result = list1;
+            /**
+             * 创建一个存储合并后的链
+             * 从头开始追加元素
+             */
+            ListNode prehead = new ListNode(-1);
+            //记录当前到了那个位置
+            ListNode prev = prehead;
             //当前不是null 继续遍历
-            while (list1!=null){
-                //获取链表中的第一个值
-                int val = list1.val;
-                System.out.println(val);
-                //下移一位
-                list1 = list1.next;
+            while (list1!=null&&list2!=null){
+                //获取第一个链表中的第一个值
+                //获取第二个链表中的第一个值
+                if(list1.val<=list2.val){
+                    // prev.next -1->null 1 2 3
+                    prev.next = list1;
+                    //下移一位
+                    list1 = list1.next;
+                }else{
+                    // prev.next -1 -> null  list2 -> 1 2 3
+                    // prev.next -> 1 2 3 null
+                    prev.next = list2;
+                    //下移一位 2 3 null
+                    list2 = list2.next;
+                }
+                //将拼接好的值追加到当前连的后边  -1 1 2 3 null
+                prev = prev.next;
             }
-            return null;
+            //合并剩余未比较的 排在最后的值
+            prev.next = (list1 == null ? list2 : list1);
+            //去除-1
+            return prehead.next;
         }
     }
 }
