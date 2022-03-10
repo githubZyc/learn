@@ -40,10 +40,20 @@ package leetcode.editor.cn;
 public class MergeTwoSortedLists_21 {
     public static void main(String[] args) {
         Solution solution = new MergeTwoSortedLists_21().new Solution();
+        ListNode listNode3 = new ListNode(3,null);
+        ListNode listNode2 = new ListNode(2,listNode3);
+        ListNode listNode1 = new ListNode(1,listNode2);
+
+
+        ListNode listNode_3 = new ListNode(3,null);
+        ListNode listNode_2 = new ListNode(2,listNode_3);
+        ListNode listNode_1 = new ListNode(1,listNode_2);
+
+        solution.mergeTwoLists(listNode1,listNode_1);
         System.out.println("Hello world");
     }
 
-    public class ListNode {
+    public static class ListNode {
         int val;
         ListNode next;
 
@@ -62,6 +72,15 @@ public class MergeTwoSortedLists_21 {
 
     class Solution {
         public ListNode mergeTwoLists(ListNode list1, ListNode list2) {
+            ListNode result = list1;
+            //当前不是null 继续遍历
+            while (list1!=null){
+                //获取链表中的第一个值
+                int val = list1.val;
+                System.out.println(val);
+                //下移一位
+                list1 = list1.next;
+            }
             return null;
         }
     }
