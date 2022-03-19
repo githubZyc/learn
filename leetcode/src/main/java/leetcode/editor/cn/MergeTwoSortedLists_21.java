@@ -45,9 +45,9 @@ public class MergeTwoSortedLists_21 {
         ListNode listNode1 = new ListNode(1,listNode2);
 
 
-        ListNode listNode_3 = new ListNode(3,null);
-        ListNode listNode_2 = new ListNode(2,listNode_3);
-        ListNode listNode_1 = new ListNode(1,listNode_2);
+        ListNode listNode_3 = new ListNode(6,null);
+        ListNode listNode_2 = new ListNode(5,listNode_3);
+        ListNode listNode_1 = new ListNode(4,listNode_2);
 
         ListNode listNode = solution.mergeTwoLists(listNode1, listNode_1);
 
@@ -77,36 +77,24 @@ public class MergeTwoSortedLists_21 {
 
     class Solution {
         public ListNode mergeTwoLists(ListNode list1, ListNode list2) {
-            /**
-             * 创建一个存储合并后的链
-             * 从头开始追加元素
-             */
-            ListNode prehead = new ListNode(-1);
-            //记录当前到了那个位置
-            ListNode prev = prehead;
-            //当前不是null 继续遍历
-            while (list1!=null&&list2!=null){
-                //获取第一个链表中的第一个值
-                //获取第二个链表中的第一个值
+            //创建存储拼接的对象
+            ListNode result = new ListNode(-1);
+            //创建指针
+            ListNode pre = result;
+            while (list1!=null && list2!=null){
+                //循环取值
                 if(list1.val<=list2.val){
-                    // prev.next -1->null 1 2 3
-                    prev.next = list1;
-                    //下移一位
+                    pre.next = list1;
                     list1 = list1.next;
                 }else{
-                    // prev.next -1 -> null  list2 -> 1 2 3
-                    // prev.next -> 1 2 3 null
-                    prev.next = list2;
-                    //下移一位 2 3 null
+                    pre.next = list2;
                     list2 = list2.next;
                 }
-                //将拼接好的值追加到当前连的后边  -1 1 2 3 null
-                prev = prev.next;
+                //改变指针指向
+                pre = pre.next;
             }
-            //合并剩余未比较的 排在最后的值
-            prev.next = (list1 == null ? list2 : list1);
-            //去除-1
-            return prehead.next;
+            pre.next = (list1 == null ? list2 : list1);
+            return result.next;
         }
     }
 }
