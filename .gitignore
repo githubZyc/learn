@@ -37,3 +37,6 @@ build/
 
 ### DOC ###
 doc
+
+all.json
+translation.json
