@@ -47,7 +47,6 @@ package leetcode.editor.cn;
 public class TwoSum_1{
     public static void main(String[] args) {
         Solution solution = new TwoSum_1().new Solution();
-        System.out.println("Hello world");
     }
     //leetcode submit region begin(Prohibit modification and deletion)
 class Solution {
