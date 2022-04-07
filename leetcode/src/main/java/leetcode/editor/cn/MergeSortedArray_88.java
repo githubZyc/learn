@@ -89,7 +89,10 @@ class Solution {
             res[m + a2] = t2[a2++];
         }
         // 将tmp中的数字排到nums1里
-        System.arraycopy(res, 0, t1, 0, m + n);
+        for (int i = 0; i < t1.length; i++) {
+            t1[i] = res[i];
+        }
+        System.out.println(Arrays.toString(t1));
     }
 }
 //leetcode submit region end(Prohibit modification and deletion)

@@ -49,7 +49,7 @@ package leetcode.editor.cn;
 public class PalindromeNumber_9{
     public static void main(String[] args) {
         Solution solution = new PalindromeNumber_9().new Solution();
-        System.out.println(solution.isPalindrome(123));
+        System.out.println(solution.isPalindrome(10));
     }
     //leetcode submit region begin(Prohibit modification and deletion)
 class Solution {
