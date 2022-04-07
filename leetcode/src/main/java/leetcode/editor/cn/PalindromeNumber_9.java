@@ -33,7 +33,7 @@
 //
 // 
 //
-// 提示： 
+// 提示：
 //
 // 
 // -231 <= x <= 231 - 1 
@@ -49,24 +49,27 @@ package leetcode.editor.cn;
 public class PalindromeNumber_9{
     public static void main(String[] args) {
         Solution solution = new PalindromeNumber_9().new Solution();
-        System.out.println(solution.isPalindrome(10));
+        System.out.println(solution.isPalindrome(21120));
     }
     //leetcode submit region begin(Prohibit modification and deletion)
 class Solution {
     public boolean isPalindrome(int x) {
-        // 121 2 121     22
         String a = String.valueOf(x);
         if(a.length() <= 1){
+            return true;
+        }
+        if(a.endsWith("0")){
             return false;
         }
         //结束位置
-        int i = a.length() / 2 + 1;
+        int il = a.length() % 2 ==0 ? a.length()/2 : a.length()/2 + 1;
         StringBuilder r = new StringBuilder("");
-        for (int i1 = i; i1 > 0; i1--) {
-            char c = a.charAt(i1);
+        for (int i = a.length() -1;( i >= (a.length() % 2 == 0 ? il: il -1)); i--) {
+            char c = a.charAt(i);
             r.append(c);
+            System.out.println(c);
         }
-        return a.substring(0,i).equals(r.toString());
+        return a.substring(0,il).equals(r.toString());
     }
 
 }

@@ -22,8 +22,6 @@ public class MaxAdd {
         return builder.reverse().toString();
     }
 
-
-
     public static String addBigNumber(String s1,String s2){
         StringBuilder re = new StringBuilder("");
         int curry = 0;
