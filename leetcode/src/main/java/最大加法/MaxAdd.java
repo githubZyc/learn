@@ -25,17 +25,18 @@ public class MaxAdd {
 
 
     public static String addBigNumber(String s1,String s2){
-        int zero = s1.length() >= s2.length() ? s1.length() - s2.length() : s2.length() - s1.length();
-        if(s1.length() > s2.length()){
-            s2 = addZero(zero,s2);
-        }else{
-            s1 = addZero(zero,s1);
-        }
-        // 12 01
         StringBuilder re = new StringBuilder("");
         int curry = 0;
-        for (int i = (s1.length() - 1); i >= 0; i--) {
-            int tmp =  (s1.charAt(i) - '0' + s2.charAt(i) - '0') + curry;
+        //双变量控制字符串遍历完毕
+        for (int i = (s1.length() - 1),k = (s2.length() - 1); i >= 0 || k>=0; i--,k--) {
+            int a = 0,b=0;
+            if (i>=0) {
+                a = s1.charAt(i) - '0';
+            }
+            if (k>=0) {
+                b = s2.charAt(k) - '0';
+            }
+            int tmp =  (a + b ) + curry;
             if(tmp>=10){
                 curry = 1;
             }else{
