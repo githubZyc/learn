@@ -46,32 +46,45 @@
 // 👍 1928 👎 0
 
 package leetcode.editor.cn;
-public class PalindromeNumber_9{
+
+public class PalindromeNumber_9 {
     public static void main(String[] args) {
         Solution solution = new PalindromeNumber_9().new Solution();
-        System.out.println(solution.isPalindrome(21120));
-    }
-    //leetcode submit region begin(Prohibit modification and deletion)
-class Solution {
-    public boolean isPalindrome(int x) {
-        String a = String.valueOf(x);
-        if(a.length() <= 1){
-            return true;
-        }
-        if(a.endsWith("0")){
-            return false;
-        }
-        //结束位置
-        int il = a.length() % 2 ==0 ? a.length()/2 : a.length()/2 + 1;
-        StringBuilder r = new StringBuilder("");
-        for (int i = a.length() -1;( i >= (a.length() % 2 == 0 ? il: il -1)); i--) {
-            char c = a.charAt(i);
-            r.append(c);
-        }
-        return a.substring(0,il).equals(r.toString());
+        System.out.println(solution.isPalindrome(1000030001));
     }
 
-}
+
+    //leetcode submit region begin(Prohibit modification and deletion)
+    class Solution {
+        public boolean isPalindrome(int x) {
+            int newX=0,origin = x;
+            while (x>0){
+                int i = x % 10;
+                x = x/10;
+                newX = newX*10 + i;
+            }
+            return newX == origin;
+        }
+
+        public boolean isPalindrome1(int x) {
+            String a = String.valueOf(x);
+            if (a.length() <= 1) {
+                return true;
+            }
+            if (a.endsWith("0")) {
+                return false;
+            }
+            //结束位置
+            int il = a.length() % 2 == 0 ? a.length() / 2 : a.length() / 2 + 1;
+            StringBuilder r = new StringBuilder("");
+            for (int i = a.length() - 1; (i >= (a.length() % 2 == 0 ? il : il - 1)); i--) {
+                char c = a.charAt(i);
+                r.append(c);
+            }
+            return a.substring(0, il).equals(r.toString());
+        }
+
+    }
 //leetcode submit region end(Prohibit modification and deletion)
 
 } 
