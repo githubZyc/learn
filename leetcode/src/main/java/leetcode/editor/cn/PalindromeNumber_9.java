@@ -67,7 +67,6 @@ class Solution {
         for (int i = a.length() -1;( i >= (a.length() % 2 == 0 ? il: il -1)); i--) {
             char c = a.charAt(i);
             r.append(c);
-            System.out.println(c);
         }
         return a.substring(0,il).equals(r.toString());
     }
