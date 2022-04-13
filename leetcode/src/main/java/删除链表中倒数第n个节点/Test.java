@@ -52,11 +52,30 @@ public class Test {
 
         NodeTest nodeTest = addNode(nodeTest1, nodeTest4);
         nodeTest = reverseList(nodeTest1);
-        while (nodeTest!=null){
-            System.out.println(nodeTest.value);
-            nodeTest = nodeTest.next;
+        NodeTest nodeTest7 = addNode(10);
+        while (nodeTest7!=null){
+            System.out.println(nodeTest7.value);
+            nodeTest7 = nodeTest7.next;
         }
 
+    }
+
+    /**
+     * 功能描述: 添加指定长度的链表
+     * @Author ZYC
+     * @Date 2022/4/13 10:18
+     * @Param [n]
+     * @Return 删除链表中倒数第n个节点.Test.NodeTest
+     * @Version 1.0
+     **/
+    private static NodeTest addNode(int n){
+        NodeTest nodeTest = new NodeTest(0);
+        NodeTest pre = nodeTest;
+        for (int i = 1; i < n; i++) {
+            pre.next = new NodeTest(i);
+            pre = pre.next;
+        }
+        return nodeTest.next;
     }
 
     /**
@@ -68,13 +87,13 @@ public class Test {
      * @Version 1.0
      **/
     private static NodeTest reverseList(NodeTest nodeTest1) {
-        NodeTest pre = null; //前一个节点
-        NodeTest curr = nodeTest1; //当前节点
+        NodeTest pre = null;
+        NodeTest curr = nodeTest1;
         while (curr!=null){
-            NodeTest temp = curr.next;
+            NodeTest next = curr.next;
             curr.next = pre;
             pre = curr;
-            curr = temp;
+            curr = next;
         }
        return pre;
     }
