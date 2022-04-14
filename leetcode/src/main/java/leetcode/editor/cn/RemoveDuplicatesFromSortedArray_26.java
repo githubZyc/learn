@@ -69,6 +69,31 @@ public class RemoveDuplicatesFromSortedArray_26{
     }
     //leetcode submit region begin(Prohibit modification and deletion)
 class Solution {
+
+    /**
+     * 功能描述: 官方的。思路相同
+     * @Author ZYC
+     * @Date 2022/4/13 15:16
+     * @Param [nums]
+     * @Return int
+     * @Version 1.0
+     **/
+    public int removeDuplicates1(int[] nums) {
+        int n = nums.length;
+        if (n == 0) {
+            return 0;
+        }
+        int fast = 1, slow = 1;
+        while (fast < n) {
+            if (nums[fast] != nums[fast - 1]) {
+                nums[slow] = nums[fast];
+                ++slow;
+            }
+            ++fast;
+        }
+        return slow;
+    }
+
     public int removeDuplicates(int[] nums) {
         // int k = 1 2 3 -一次成功！带劲
         //解答成功:
