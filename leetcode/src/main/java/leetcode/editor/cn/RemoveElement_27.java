@@ -58,15 +58,42 @@
 // 👍 1273 👎 0
 
 package leetcode.editor.cn;
+
+import java.util.Arrays;
+
 public class RemoveElement_27{
     public static void main(String[] args) {
         Solution solution = new RemoveElement_27().new Solution();
+        int[] ints = {1,2,2,1};
+        int i = solution.removeElement(ints, 2);
+        System.out.println(i);
+        System.out.println(Arrays.toString(ints));
         System.out.println("Hello world");
     }
     //leetcode submit region begin(Prohibit modification and deletion)
 class Solution {
     public int removeElement(int[] nums, int val) {
-        return 0;
+        // 1 2 2 1     2
+        int k=0;
+        for (int i=0;i<nums.length;i++){
+            if(nums[i]!=val){
+                nums[k] = nums[i];
+                k++;
+            }
+        }
+        return k;
+    }
+    public int removeElement1(int[] nums, int val) {
+        int k = 0;
+        int curr = 0;
+        while (curr<nums.length){
+            if(nums[curr]!=val){
+                nums[k]=nums[curr];
+                k++;
+            }
+            curr++;
+        }
+        return k;
     }
 }
 //leetcode submit region end(Prohibit modification and deletion)
