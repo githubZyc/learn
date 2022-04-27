@@ -53,6 +53,9 @@ class Solution {
         if(nums[len - 1] > target){
             return len;
         }
+        if(nums[0]>target){
+            return 0;
+        }
         int left = 0;
         int right = len - 1;
         while (left<right){
