@@ -47,9 +47,14 @@
 
 package leetcode.editor.cn;
 public class ImplementStrstr_28{
+    public static String cleanHtml(String html) {
+            String regex = "\\<!--(.*)--\\>";
+            html = html.replaceAll(regex, "");
+        return html;
+    }
     public static void main(String[] args) {
-        Solution solution = new ImplementStrstr_28().new Solution();
-        System.out.println("Hello world");
+        String s = cleanHtml("掯");
+        System.out.println(s);
     }
     //leetcode submit region begin(Prohibit modification and deletion)
 class Solution {

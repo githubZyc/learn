@@ -1,0 +1,59 @@
+server:
+    port: 9900
+    servlet:
+        context-path: /wework
+spring:
+    datasource:
+        url: jdbc:mysql://localhost:3306/qywx_inner_demo?useUnicode=true&characterEncoding=utf-8&useSSL=false
+        username: root
+        password: root
+        driver-class-name: com.mysql.cj.jdbc.Driver
+
+    redis:
+        ## Redis数据库索引（默认为0）
+        database: 0
+        ## Redis服务器地址
+        host: 127.0.0.1
+        ## Redis服务器连接端口
+        port: 6379
+        ## Redis服务器连接密码（默认为空）
+        password:
+        timeout: 0
+        pool:
+            max-active: 1000
+            max-wait: 1
+            max-idle: 10
+            min-idle: 2
+    servlet:
+        multipart:
+            maxFileSize: 20MB
+    mvc:
+        view:
+            prefix: /WEB-INF/jsp/
+            suffix: .jsp
+mybatis:
+    configuration:
+        ##控制台sql
+        log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+        ##数据库字段下划线与驼峰
+        map-underscore-to-camel-case: true
+        ##mapper扫码路径
+    mapper-locations: classpath:mapper/*.xml
+    ##xml配置别名
+    type-aliases-package: com.tobdev.qywxinner.model.entity
+
+
+qywx-cache:
+    keyPrefix: "tobdev-"
+    suitTicket: "suite-ticket"
+
+#自建应用配置
+qywx-inner:
+    corpId: "wwef681f39d482f3f8"
+    agentId: "1000002"
+    agentSecret: "O8B2-yqCkbPRdrBeHZz9pRTILA-WHirRGPZcgex9f-I"
+    providerSecret: ""
+    suiteId: ""
+    suiteSecret: ""
+    token: ""
+    encodingAESKey: ""

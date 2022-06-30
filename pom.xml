@@ -21,6 +21,8 @@
         <module>lambda</module>
         <module>transactional</module>
         <module>queue</module>
+        <module>spring-mvc</module>
+        <module>wework-service</module>
     </modules>
     <!-- 所有依赖包版本 -->
     <properties>
