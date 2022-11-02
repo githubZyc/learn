@@ -1,5 +1,7 @@
 package 反转链表;
 
+import java.util.Stack;
+
 /**
  * 功能描述:
  * 给你单链表的头节点 head ，请你反转链表，并返回反转后的链表。
@@ -35,6 +37,32 @@ public class Solution {
         ListNode(int val, ListNode next) { this.val = val; this.next = next; }
     }
 
+    Stack<ListNode> stack = new Stack<>();
+
+    public ListNode reverseList3(ListNode head){
+        while (head!=null){
+            stack.push(head);
+            ListNode next = head.next;
+            head = next;
+        }
+        ListNode pop = stack.pop();
+        while (!stack.isEmpty()){
+
+        }
+        return head;
+    }
+
+    public ListNode reverseList2(ListNode head){
+        ListNode r = null;
+        while (head!=null){
+            ListNode next = head.next;
+            head.next = r;
+            r = head;
+            head=next;
+        }
+        return r;
+    }
+
     // 1->2->3->4->5->null
     // 1 2 3 4 5 1
     public ListNode reverseList(ListNode head) {
@@ -57,7 +85,7 @@ public class Solution {
     public static void main(String[] args) {
         Solution solution = new Solution();
         ListNode node = solution.createNode();
-        ListNode result = solution.reverseList(node);
+        ListNode result = solution.reverseList3(node);
         while (result!=null){
             System.out.println(result.val);
             result = result.next;

@@ -1,5 +1,7 @@
 package k个一组链表进行翻转;
 
+import 反转链表.Solution;
+
 import java.util.Objects;
 
 /**
@@ -40,7 +42,7 @@ public class Test {
 //            nodeTest = nodeTest.next;
 //            System.out.println(nodeTest.value);
 //        }
-        reverseKGroup(nodeTest,3);
+        reverseList2(nodeTest);
 
     }
 
@@ -65,22 +67,39 @@ public class Test {
         return null;
     }
 
-    private static void print(NodeTest node, int group,int k) {
-        int n =  k;
-        NodeTest cur = node,prev = node;
+    private static void print(NodeTest node,int group,int k) {
+        int currK = k;
+        NodeTest result = null;
         do {
-            if (!Objects.isNull(cur.next)&&k>0){
-                NodeTest tempNode = cur.next;
-                cur.next = prev;
-                prev = cur;
-                cur = tempNode;
-                System.out.println(cur.value);
-                k -- ;
-            }else{
-                group --;
-                k = n;
-            }
+           if(node!=null){
+               NodeTest tempNode = null;NodeTest pre = null;
+               if(currK>0){
+                   int value = node.value;
+                   System.out.println(value);
+                   node = node.next;
+                   currK--;
+               }else{
+                   //达到翻转条件
+                   currK = k;
+                   group --;
+                   //翻转
+
+               }
+           }
         }while (group>0);
         System.out.println(node);
+    }
+
+    public static NodeTest reverseList2(NodeTest head) {
+        NodeTest res = null;
+        while (head != null) {
+            //临时记录
+            NodeTest temp = head.next;
+            head.next = res;
+            res = head;
+            head = temp;
+        }
+        System.out.println(res);
+        return res;
     }
 }
