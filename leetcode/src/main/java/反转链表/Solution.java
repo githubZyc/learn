@@ -46,10 +46,11 @@ public class Solution {
             head = next;
         }
         ListNode pop = stack.pop();
+        ListNode listNode = new ListNode(pop.val);
         while (!stack.isEmpty()){
-
+            listNode.next = stack.pop();
         }
-        return head;
+        return listNode;
     }
 
     public ListNode reverseList2(ListNode head){

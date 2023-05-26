@@ -23,6 +23,8 @@
         <module>queue</module>
         <module>spring-mvc</module>
         <module>wework-service</module>
+        <module>gather</module>
+        <module>shiro-test</module>
     </modules>
     <!-- 所有依赖包版本 -->
     <properties>
@@ -50,6 +52,7 @@
         <docker.image.prefix>zx</docker.image.prefix>
         <cloud-alibaba.version>0.2.2.RELEASE</cloud-alibaba.version>
         <easyexcel.version>2.1.1</easyexcel.version>
+        <jsoup.version>1.11.3</jsoup.version>
     </properties>
 
     <!-- 管理依赖 -->
