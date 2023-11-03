@@ -1,4 +1,4 @@
-package template;
+package template.demo2;
 
 /**
  * 功能描述:
