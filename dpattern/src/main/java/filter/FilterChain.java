@@ -1,8 +1,7 @@
 package filter;
 
-import org.apache.commons.collections.CollectionUtils;
-
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -27,7 +26,7 @@ public class FilterChain implements StudyPrepareFilter {
     }
 
      public void addFilter(StudyPrepareFilter studyPrepareFilter){
-        if(CollectionUtils.isEmpty(studyPrepareFilterList)){
+        if(null == studyPrepareFilterList){
             this.studyPrepareFilterList = new ArrayList<>();
         }
          this.studyPrepareFilterList.add(studyPrepareFilter);
