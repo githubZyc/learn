@@ -108,13 +108,25 @@ class SpringAiApplicationTests {
 
     @Test
     void multiplePrompt(){
-        var userMessage = new UserMessage("讲述一下图片中的内容",
+        Resource resource = new ClassPathResource("1730800014704.jpg");
+        var userMessage = new UserMessage("请将图片中的内容转成一个java 对象，通过List 存储," +
+                "请将表格中的所有数据添加到生成的对象中 不要省略",
                 new Media(MimeTypeUtils.IMAGE_JPEG,
-                        "https://pics4.baidu.com/feed/77c6a7efce1b9d164f5ed0ccbcd6ba818d54649c.jpeg@f_auto?token=d4be5a523daa51b1003c800b4c0e1b3e"));
+                        resource));
 
         ChatResponse response = chatModel.call(new Prompt(userMessage,
                 OpenAiChatOptions.builder().withModel(OpenAiApi.ChatModel.GPT_4_O.getValue()).build()));
         System.out.println(response.getResult().getOutput().getContent());
+
+
+
+//        var userMessage = new UserMessage("讲述一下图片中的内容",
+//                new Media(MimeTypeUtils.IMAGE_JPEG,
+//                        "https://pics4.baidu.com/feed/77c6a7efce1b9d164f5ed0ccbcd6ba818d54649c.jpeg@f_auto?token=d4be5a523daa51b1003c800b4c0e1b3e"));
+//
+//        ChatResponse response = chatModel.call(new Prompt(userMessage,
+//                OpenAiChatOptions.builder().withModel(OpenAiApi.ChatModel.GPT_4_O.getValue()).build()));
+//        System.out.println(response.getResult().getOutput().getContent());
 
     }
 }
