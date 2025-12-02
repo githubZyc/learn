@@ -224,14 +224,18 @@
                     // Look for text directly in result.text
                     const text = item.result.text || '';
                     fullResponse += text;
+                } else if (item.text) {
+                    // Look for text directly in item.text
+                    const text = item.text || '';
+                    fullResponse += text;
                 }
             }
             
             // Add AI response to chat
-            if (fullResponse) {
+            if (fullResponse.trim()) {
                 addMessage('ai', fullResponse);
             } else {
-                addMessage('ai', '没有收到回复内容。');
+                addMessage('ai', '抱歉，我没有理解您的问题。请重新提问或稍后再试。');
             }
         } catch (error) {
             console.error('Error:', error);

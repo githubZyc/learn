@@ -36,6 +36,7 @@ public class QuestionController {
                         "请根据学生的问题，详细解答并给出解题过程。";
         Prompt prompt = new Prompt(List.of(new SystemMessage(systemMessage), new UserMessage(question)));
         Flux<ChatResponse> responseFlux = dashScopeChatModel.stream(prompt);
-        return responseFlux.collectList();
+        return responseFlux.collectList()
+                .onErrorReturn(java.util.Collections.emptyList()); // Return empty list on error
     }
 }
