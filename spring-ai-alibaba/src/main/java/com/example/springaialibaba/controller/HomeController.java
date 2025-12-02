@@ -8,6 +8,6 @@ public class HomeController {
 
     @GetMapping("/")
     public String home() {
-        return "redirect:/index.html"; // Redirect to the static Vue.js application
+        return "redirect:/index.html"; // Redirect to the static HTML file
     }
 }
