@@ -205,6 +205,8 @@
     // Global variables
     let uploadedImage = null;
     let currentMethod = null;
+    // Generate a unique session ID for this conversation
+    const sessionId = 'session_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
 
     // Get current time in HH:MM format
     function getCurrentTime() {
@@ -314,6 +316,7 @@
                 const formData = new FormData();
                 formData.append('question', question);
                 formData.append('image', image);
+                formData.append('sessionId', sessionId);
                 
                 response = await fetch('/api/question/ask-with-image', {
                     method: 'POST',
@@ -324,6 +327,7 @@
                 const params = new URLSearchParams();
                 params.append('question', question);
                 params.append('method', currentMethod);
+                params.append('sessionId', sessionId);
                 
                 response = await fetch('/api/question/ask-with-method', {
                     method: 'POST',
@@ -333,8 +337,8 @@
                     body: params
                 });
             } else {
-                // Send text-only question
-                response = await fetch('/api/question/ask', {
+                // Send text-only question with session ID
+                response = await fetch(`/api/question/ask?sessionId=${encodeURIComponent(sessionId)}`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'text/plain'

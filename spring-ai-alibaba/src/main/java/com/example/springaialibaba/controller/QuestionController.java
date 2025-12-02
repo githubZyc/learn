@@ -22,21 +22,24 @@ public class QuestionController {
     }
 
     @PostMapping("/ask")
-    public Mono<List<ChatResponse>> askQuestion(@RequestBody String question) {
-        return questionService.askQuestion(question);
+    public Mono<List<ChatResponse>> askQuestion(@RequestBody String question, 
+                                               @RequestParam(required = false, defaultValue = "default") String sessionId) {
+        return questionService.askQuestion(question, sessionId);
     }
 
     @PostMapping(value = "/ask-with-image", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public Mono<List<ChatResponse>> askQuestionWithImage(
             @RequestParam("question") String question,
-            @RequestParam("image") MultipartFile image) {
-        return questionService.askQuestionWithImage(question, image);
+            @RequestParam("image") MultipartFile image,
+            @RequestParam(required = false, defaultValue = "default") String sessionId) {
+        return questionService.askQuestionWithImage(question, image, sessionId);
     }
 
     @PostMapping("/ask-with-method")
     public Mono<List<ChatResponse>> askQuestionWithMethod(
             @RequestParam("question") String question,
-            @RequestParam("method") String method) {
-        return questionService.askQuestionWithMethod(question, method);
+            @RequestParam("method") String method,
+            @RequestParam(required = false, defaultValue = "default") String sessionId) {
+        return questionService.askQuestionWithMethod(question, method, sessionId);
     }
 }

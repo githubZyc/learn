@@ -2,6 +2,7 @@ package com.example.springaialibaba.service;
 
 import com.alibaba.cloud.ai.dashscope.chat.DashScopeChatModel;
 import org.springframework.ai.model.Media;
+import org.springframework.ai.chat.messages.Message;
 import org.springframework.ai.chat.messages.SystemMessage;
 import org.springframework.ai.chat.messages.UserMessage;
 import org.springframework.ai.chat.model.ChatResponse;
@@ -13,6 +14,7 @@ import org.springframework.web.multipart.MultipartFile;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+import java.util.ArrayList;
 import java.util.Base64;
 import java.util.List;
 import java.util.Map;
@@ -23,47 +25,62 @@ public class QuestionServiceImpl implements QuestionService {
 
     private final DashScopeChatModel dashScopeChatModel;
     private final Map<String, TeachingMethod> teachingMethods;
+    private final ConversationManager conversationManager;
 
     @Autowired
     public QuestionServiceImpl(DashScopeChatModel dashScopeChatModel, 
                                ExplanationMethod explanationMethod,
                                ExampleMethod exampleMethod,
-                               ExerciseMethod exerciseMethod) {
+                               ExerciseMethod exerciseMethod,
+                               ConversationManager conversationManager) {
         this.dashScopeChatModel = dashScopeChatModel;
         this.teachingMethods = new HashMap<>();
         this.teachingMethods.put(explanationMethod.getName(), explanationMethod);
         this.teachingMethods.put(exampleMethod.getName(), exampleMethod);
         this.teachingMethods.put(exerciseMethod.getName(), exerciseMethod);
+        this.conversationManager = conversationManager;
     }
 
     @Override
-    public Mono<List<ChatResponse>> askQuestion(String question) {
-        String systemMessage = "你是一个小学1-6年级的智能辅导老师，具备以下知识库能力：\n" +
-                "1. 数学运算（加减乘除、分数、小数）\n" +
-                "2. 几何图形认知\n" +
-                "3. 基础代数\n" +
-                "4. 应用题解析\n" +
-                "请根据学生的问题，详细解答并给出解题过程。";
-        Prompt prompt = new Prompt(List.of(new SystemMessage(systemMessage), new UserMessage(question)));
+    public Mono<List<ChatResponse>> askQuestion(String question, String sessionId) {
+        // Add user message to conversation history
+        conversationManager.addUserMessage(sessionId, question);
+        
+        // Get conversation history (limit to last 10 messages to prevent context overflow)
+        List<Message> history = new ArrayList<>();
+        history.add(conversationManager.getSystemMessage(false));
+        history.addAll(conversationManager.getRecentMessages(sessionId, 10));
+        
+        Prompt prompt = new Prompt(history);
         Flux<ChatResponse> responseFlux = dashScopeChatModel.stream(prompt);
+        
         return responseFlux.collectList()
+                .doOnNext(responses -> {
+                    // Extract and save assistant response to conversation history
+                    StringBuilder responseBuilder = new StringBuilder();
+                    for (ChatResponse response : responses) {
+                        if (response.getResult() != null && response.getResult().getOutput() != null) {
+                            responseBuilder.append(response.getResult().getOutput().getText());
+                        }
+                    }
+                    conversationManager.addAssistantMessage(sessionId, responseBuilder.toString());
+                })
                 .onErrorReturn(java.util.Collections.emptyList());
     }
 
     @Override
-    public Mono<List<ChatResponse>> askQuestionWithImage(String question, MultipartFile image) {
+    public Mono<List<ChatResponse>> askQuestionWithImage(String question, MultipartFile image, String sessionId) {
         try {
             // Convert image to base64
             String base64Image = Base64.getEncoder().encodeToString(image.getBytes());
 
-            String systemMessage = "你是一个小学1-6年级的智能辅导老师，具备以下知识库能力：\n" +
-                    "1. 数学运算（加减乘除、分数、小数）\n" +
-                    "2. 几何图形认知\n" +
-                    "3. 基础代数\n" +
-                    "4. 应用题解析\n" +
-                    "5. 图像识别与分析\n" +
-                    "请根据学生的问题和提供的图片，详细解答并给出解题过程。";
-
+            // Add user message with image to conversation history
+            conversationManager.addUserMessage(sessionId, question);
+            
+            // Get conversation history (limit to last 10 messages to prevent context overflow)
+            List<Message> history = new ArrayList<>();
+            history.add(conversationManager.getSystemMessage(true));
+            
             // Create media object for the image with Builder pattern
             MimeType mimeType = MimeType.valueOf(image.getContentType());
             Media media = Media.builder()
@@ -73,10 +90,25 @@ public class QuestionServiceImpl implements QuestionService {
 
             // Create user message with both text and image
             UserMessage userMessage = new UserMessage(question, List.of(media));
+            history.add(userMessage);
+            
+            // Add recent conversation history
+            history.addAll(conversationManager.getRecentMessages(sessionId, 8)); // Leave room for system and image messages
 
-            Prompt prompt = new Prompt(List.of(new SystemMessage(systemMessage), userMessage));
+            Prompt prompt = new Prompt(history);
             Flux<ChatResponse> responseFlux = dashScopeChatModel.stream(prompt);
+            
             return responseFlux.collectList()
+                    .doOnNext(responses -> {
+                        // Extract and save assistant response to conversation history
+                        StringBuilder responseBuilder = new StringBuilder();
+                        for (ChatResponse response : responses) {
+                            if (response.getResult() != null && response.getResult().getOutput() != null) {
+                                responseBuilder.append(response.getResult().getOutput().getText());
+                            }
+                        }
+                        conversationManager.addAssistantMessage(sessionId, responseBuilder.toString());
+                    })
                     .onErrorReturn(java.util.Collections.emptyList());
         } catch (Exception e) {
             return Mono.error(e);
@@ -84,13 +116,20 @@ public class QuestionServiceImpl implements QuestionService {
     }
 
     @Override
-    public Mono<List<ChatResponse>> askQuestionWithMethod(String question, String method) {
+    public Mono<List<ChatResponse>> askQuestionWithMethod(String question, String method, String sessionId) {
         TeachingMethod teachingMethod = teachingMethods.get(method);
         if (teachingMethod != null) {
-            return teachingMethod.execute(question);
-        } else {
-            // Fall back to default method if the specified method is not found
-            return askQuestion(question);
+            // For teaching methods, we delegate to the specific method implementation
+            if (teachingMethod instanceof ExplanationMethod) {
+                return ((ExplanationMethod) teachingMethod).executeWithSession(question, sessionId);
+            } else if (teachingMethod instanceof ExampleMethod) {
+                return ((ExampleMethod) teachingMethod).executeWithSession(question, sessionId);
+            } else if (teachingMethod instanceof ExerciseMethod) {
+                return ((ExerciseMethod) teachingMethod).executeWithSession(question, sessionId);
+            }
         }
+        
+        // Fall back to default method if the specified method is not found
+        return askQuestion(question, sessionId);
     }
 }
