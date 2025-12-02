@@ -142,61 +142,24 @@
         const responseContainer = document.getElementById('response-container');
         const messageDiv = document.createElement('div');
         messageDiv.className = `message ${role}-message`;
-
+        
         const avatarDiv = document.createElement('div');
         avatarDiv.className = `avatar ${role}-avatar`;
         avatarDiv.textContent = role === 'user' ? '我' : '师';
-
+        
         const contentDiv = document.createElement('div');
         contentDiv.className = 'message-content';
         contentDiv.textContent = content;
-
+        
         const timestampDiv = document.createElement('div');
         timestampDiv.className = 'timestamp';
         timestampDiv.textContent = getCurrentTime();
-
+        
         contentDiv.appendChild(timestampDiv);
         messageDiv.appendChild(avatarDiv);
         messageDiv.appendChild(contentDiv);
         responseContainer.appendChild(messageDiv);
-
-        // Scroll to bottom
-        responseContainer.scrollTop = responseContainer.scrollHeight;
-    }
-
-    // Add or update streaming message
-    function updateStreamingMessage(content) {
-        const responseContainer = document.getElementById('response-container');
-        let streamingMessage = document.getElementById('streaming-message');
-
-        if (!streamingMessage) {
-            // Create new streaming message element
-            const messageDiv = document.createElement('div');
-            messageDiv.className = 'message ai-message';
-            messageDiv.id = 'streaming-message';
-
-            const avatarDiv = document.createElement('div');
-            avatarDiv.className = 'avatar ai-avatar';
-            avatarDiv.textContent = '师';
-
-            const contentDiv = document.createElement('div');
-            contentDiv.className = 'message-content';
-            contentDiv.textContent = content;
-
-            const timestampDiv = document.createElement('div');
-            timestampDiv.className = 'timestamp';
-            timestampDiv.textContent = getCurrentTime();
-
-            contentDiv.appendChild(timestampDiv);
-            messageDiv.appendChild(avatarDiv);
-            messageDiv.appendChild(contentDiv);
-            responseContainer.appendChild(messageDiv);
-        } else {
-            // Update existing streaming message
-            const contentDiv = streamingMessage.querySelector('.message-content');
-            contentDiv.firstChild.textContent = content;
-        }
-
+        
         // Scroll to bottom
         responseContainer.scrollTop = responseContainer.scrollHeight;
     }
@@ -210,12 +173,20 @@
 
         // Add user question to chat
         addMessage('user', question);
-
+        
         // Clear input
         document.getElementById('question-input').value = '';
-
+        
+        // Show thinking indicator
+        const responseContainer = document.getElementById('response-container');
+        const thinkingDiv = document.createElement('div');
+        thinkingDiv.id = 'thinking-indicator';
+        thinkingDiv.className = 'thinking';
+        thinkingDiv.textContent = '老师正在思考中...';
+        responseContainer.appendChild(thinkingDiv);
+        responseContainer.scrollTop = responseContainer.scrollHeight;
+        
         try {
-            // Make streaming request
             const response = await fetch('/api/question/ask', {
                 method: 'POST',
                 headers: {
@@ -224,48 +195,49 @@
                 body: question
             });
 
+            // Remove thinking indicator
+            if (document.getElementById('thinking-indicator')) {
+                document.getElementById('thinking-indicator').remove();
+            }
+
             if (!response.ok) {
                 throw new Error(`HTTP error! status: ${response.status}`);
             }
 
-            // Handle streaming response as text
-            const reader = response.body.getReader();
-            const decoder = new TextDecoder('utf-8');
+            // Handle the response as a JSON array
+            const responseData = await response.json();
+            
             let fullResponse = '';
-
-            // Remove any existing streaming message
-            const existingStreaming = document.getElementById('streaming-message');
-            if (existingStreaming) {
-                existingStreaming.remove();
-            }
-
-            // Read the stream
-            while (true) {
-                const { done, value } = await reader.read();
-                if (done) {
-                    break;
+            
+            // Process each item in the response array
+            for (const item of responseData) {
+                // Check different possible structures for the text content
+                if (item.results && item.results.length > 0 && item.results[0].output) {
+                    // Look for text in results[0].output.text
+                    const text = item.results[0].output.text || '';
+                    fullResponse += text;
+                } else if (item.result && item.result.output) {
+                    // Look for text in result.output.text
+                    const text = item.result.output.text || '';
+                    fullResponse += text;
+                } else if (item.result && item.result.text) {
+                    // Look for text directly in result.text
+                    const text = item.result.text || '';
+                    fullResponse += text;
                 }
-
-                // Decode chunk and add to response
-                const chunk = decoder.decode(value, { stream: true });
-                fullResponse += chunk;
-
-                // Update streaming message
-                updateStreamingMessage(fullResponse);
             }
-
-            // Convert streaming message to regular message
-            const streamingMessage = document.getElementById('streaming-message');
-            if (streamingMessage) {
-                streamingMessage.id = '';
-                streamingMessage.querySelector('.timestamp').textContent = getCurrentTime();
+            
+            // Add AI response to chat
+            if (fullResponse) {
+                addMessage('ai', fullResponse);
+            } else {
+                addMessage('ai', '没有收到回复内容。');
             }
         } catch (error) {
             console.error('Error:', error);
-            // Remove any existing streaming message
-            const existingStreaming = document.getElementById('streaming-message');
-            if (existingStreaming) {
-                existingStreaming.remove();
+            // Remove thinking indicator
+            if (document.getElementById('thinking-indicator')) {
+                document.getElementById('thinking-indicator').remove();
             }
             addMessage('ai', '发生错误: ' + error.message);
         }
