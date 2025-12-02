@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>小学智能辅导老师</title>
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+        #app {
+            display: flex;
+            flex-direction: column;
+            height: 80vh;
+        }
+        #chat-container {
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+        }
+        #response-container {
+            flex-grow: 1;
+            margin-bottom: 10px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 10px;
+            background-color: white;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+        }
+        .message {
+            display: flex;
+            margin-bottom: 15px;
+            animation: fadeIn 0.3s ease-in;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .user-message {
+            justify-content: flex-end;
+        }
+        .ai-message {
+            justify-content: flex-start;
+        }
+        .avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            color: white;
+        }
+        .user-avatar {
+            background-color: #2196F3;
+        }
+        .ai-avatar {
+            background-color: #FF9800;
+        }
+        .message-content {
+            max-width: 70%;
+            padding: 10px 15px;
+            border-radius: 18px;
+            margin: 0 10px;
+            position: relative;
+        }
+        .user-message .message-content {
+            background-color: #2196F3;
+            color: white;
+            border-bottom-right-radius: 4px;
+        }
+        .ai-message .message-content {
+            background-color: #f1f1f1;
+            color: #333;
+            border-bottom-left-radius: 4px;
+        }
+        .timestamp {
+            font-size: 12px;
+            color: #999;
+            margin-top: 5px;
+            text-align: right;
+        }
+        #question-input-area {
+            display: flex;
+            gap: 10px;
+            padding: 10px;
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        #question-input {
+            flex-grow: 1;
+            padding: 10px;
+            font-size: 16px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        #ask-button {
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 4px;
+        }
+        #ask-button:hover {
+            background-color: #45a049;
+        }
+        #ask-button:disabled {
+            background-color: #cccccc;
+            cursor: not-allowed;
+        }
+        .thinking {
+            color: #666;
+            font-style: italic;
+            text-align: center;
+            padding: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div id="app">
+        <h1>小学智能辅导老师12</h1>
+        <div id="chat-container">
+            <div id="response-container">
+                <div v-for="message in messages" :key="message.id" :class="['message', message.role + '-message']">
+                    <div :class="['avatar', message.role + '-avatar']">{{ message.role === 'user' ? '我' : '师' }}</div>
+                    <div class="message-content">
+                        {{ message.content }}
+                        <div class="timestamp">{{ message.timestamp }}</div>
+                    </div>
+                </div>
+                <div v-if="isLoading" class="thinking">老师正在思考中...</div>
+            </div>
+            <div id="question-input-area">
+                <input 
+                    type="text" 
+                    id="question-input" 
+                    v-model="question" 
+                    @keypress="handleKeyPress" 
+                    placeholder="请输入你的问题..." 
+                    :disabled="isLoading"
+                >
+                <button 
+                    id="ask-button" 
+                    @click="sendQuestion" 
+                    :disabled="isLoading"
+                >
+                    {{ isLoading ? '思考中...' : '提问' }}
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script src="/js/app.js"></script>
+</body>
+</html>

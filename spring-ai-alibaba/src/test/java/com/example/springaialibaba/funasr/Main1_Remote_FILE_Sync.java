@@ -20,6 +20,7 @@ public class Main1_Remote_FILE_Sync {
         // 以下为北京地域url，若使用新加坡地域的模型，需将url替换为：https://dashscope-intl.aliyuncs.com/api/v1
         Constants.baseHttpApiUrl = "https://dashscope.aliyuncs.com/api/v1";
         // 创建转写请求参数
+        // spring summer fall winter  they  their
         TranscriptionParam param =
                 TranscriptionParam.builder()
                         // 新加坡和北京地域的API Key不同。获取API Key：https://help.aliyun.com/zh/model-studio/get-api-key
@@ -39,6 +40,7 @@ public class Main1_Remote_FILE_Sync {
             // 阻塞等待任务完成并获取结果
             result = transcription.wait(
                     TranscriptionQueryParam.FromTranscriptionParam(param, result.getTaskId()));
+
             // 打印结果
             System.out.println("result.getOutput()" + result.getOutput());
             System.out.println(new GsonBuilder().setPrettyPrinting().create().toJson(result.getOutput()));

@@ -1,0 +1,10 @@
+spring:
+  application:
+    name: spring-ai-ollama
+  ai:
+    ollama:
+      base-url: http://localhost:11434
+      chat:
+#        options:
+#          format: json
+        model: qwen:0.5b

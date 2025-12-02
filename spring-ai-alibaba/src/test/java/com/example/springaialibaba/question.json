@@ -1,0 +1,977 @@
+[
+    {
+        "result": {
+            "metadata": {
+                "finishReason": "NULL",
+                "contentFilters": [],
+                "empty": true
+            },
+            "output": {
+                "messageType": "ASSISTANT",
+                "metadata": {
+                    "finishReason": "NULL",
+                    "role": "ASSISTANT",
+                    "id": "50cae71a-fe80-48ce-8871-a91875dd4100",
+                    "messageType": "ASSISTANT",
+                    "reasoningContent": ""
+                },
+                "toolCalls": [],
+                "media": [],
+                "text": "你好"
+            }
+        },
+        "metadata": {
+            "id": "50cae71a-fe80-48ce-8871-a91875dd4100",
+            "model": "",
+            "rateLimit": {
+                "requestsLimit": 0,
+                "requestsRemaining": 0,
+                "requestsReset": "PT0S",
+                "tokensRemaining": 0,
+                "tokensLimit": 0,
+                "tokensReset": "PT0S"
+            },
+            "usage": {
+                "promptTokens": 86,
+                "completionTokens": 0,
+                "generationTokens": 1,
+                "totalTokens": 87,
+                "nativeUsage": null
+            },
+            "promptMetadata": [],
+            "empty": true
+        },
+        "results": [
+            {
+                "metadata": {
+                    "finishReason": "NULL",
+                    "contentFilters": [],
+                    "empty": true
+                },
+                "output": {
+                    "messageType": "ASSISTANT",
+                    "metadata": {
+                        "finishReason": "NULL",
+                        "role": "ASSISTANT",
+                        "id": "50cae71a-fe80-48ce-8871-a91875dd4100",
+                        "messageType": "ASSISTANT",
+                        "reasoningContent": ""
+                    },
+                    "toolCalls": [],
+                    "media": [],
+                    "text": "你好"
+                }
+            }
+        ]
+    },
+    {
+        "result": {
+            "metadata": {
+                "finishReason": "NULL",
+                "contentFilters": [],
+                "empty": true
+            },
+            "output": {
+                "messageType": "ASSISTANT",
+                "metadata": {
+                    "finishReason": "NULL",
+                    "role": "ASSISTANT",
+                    "id": "50cae71a-fe80-48ce-8871-a91875dd4100",
+                    "messageType": "ASSISTANT",
+                    "reasoningContent": ""
+                },
+                "toolCalls": [],
+                "media": [],
+                "text": "呀"
+            }
+        },
+        "metadata": {
+            "id": "50cae71a-fe80-48ce-8871-a91875dd4100",
+            "model": "",
+            "rateLimit": {
+                "requestsLimit": 0,
+                "requestsRemaining": 0,
+                "requestsReset": "PT0S",
+                "tokensRemaining": 0,
+                "tokensLimit": 0,
+                "tokensReset": "PT0S"
+            },
+            "usage": {
+                "promptTokens": 86,
+                "completionTokens": 0,
+                "generationTokens": 2,
+                "totalTokens": 88,
+                "nativeUsage": null
+            },
+            "promptMetadata": [],
+            "empty": true
+        },
+        "results": [
+            {
+                "metadata": {
+                    "finishReason": "NULL",
+                    "contentFilters": [],
+                    "empty": true
+                },
+                "output": {
+                    "messageType": "ASSISTANT",
+                    "metadata": {
+                        "finishReason": "NULL",
+                        "role": "ASSISTANT",
+                        "id": "50cae71a-fe80-48ce-8871-a91875dd4100",
+                        "messageType": "ASSISTANT",
+                        "reasoningContent": ""
+                    },
+                    "toolCalls": [],
+                    "media": [],
+                    "text": "呀"
+                }
+            }
+        ]
+    },
+    {
+        "result": {
+            "metadata": {
+                "finishReason": "NULL",
+                "contentFilters": [],
+                "empty": true
+            },
+            "output": {
+                "messageType": "ASSISTANT",
+                "metadata": {
+                    "finishReason": "NULL",
+                    "role": "ASSISTANT",
+                    "id": "50cae71a-fe80-48ce-8871-a91875dd4100",
+                    "messageType": "ASSISTANT",
+                    "reasoningContent": ""
+                },
+                "toolCalls": [],
+                "media": [],
+                "text": "！\uD83D\uDC4B"
+            }
+        },
+        "metadata": {
+            "id": "50cae71a-fe80-48ce-8871-a91875dd4100",
+            "model": "",
+            "rateLimit": {
+                "requestsLimit": 0,
+                "requestsRemaining": 0,
+                "requestsReset": "PT0S",
+                "tokensRemaining": 0,
+                "tokensLimit": 0,
+                "tokensReset": "PT0S"
+            },
+            "usage": {
+                "promptTokens": 86,
+                "completionTokens": 0,
+                "generationTokens": 4,
+                "totalTokens": 90,
+                "nativeUsage": null
+            },
+            "promptMetadata": [],
+            "empty": true
+        },
+        "results": [
+            {
+                "metadata": {
+                    "finishReason": "NULL",
+                    "contentFilters": [],
+                    "empty": true
+                },
+                "output": {
+                    "messageType": "ASSISTANT",
+                    "metadata": {
+                        "finishReason": "NULL",
+                        "role": "ASSISTANT",
+                        "id": "50cae71a-fe80-48ce-8871-a91875dd4100",
+                        "messageType": "ASSISTANT",
+                        "reasoningContent": ""
+                    },
+                    "toolCalls": [],
+                    "media": [],
+                    "text": "！\uD83D\uDC4B"
+                }
+            }
+        ]
+    },
+    {
+        "result": {
+            "metadata": {
+                "finishReason": "NULL",
+                "contentFilters": [],
+                "empty": true
+            },
+            "output": {
+                "messageType": "ASSISTANT",
+                "metadata": {
+                    "finishReason": "NULL",
+                    "role": "ASSISTANT",
+                    "id": "50cae71a-fe80-48ce-8871-a91875dd4100",
+                    "messageType": "ASSISTANT",
+                    "reasoningContent": ""
+                },
+                "toolCalls": [],
+                "media": [],
+                "text": " 很高兴见到你～"
+            }
+        },
+        "metadata": {
+            "id": "50cae71a-fe80-48ce-8871-a91875dd4100",
+            "model": "",
+            "rateLimit": {
+                "requestsLimit": 0,
+                "requestsRemaining": 0,
+                "requestsReset": "PT0S",
+                "tokensRemaining": 0,
+                "tokensLimit": 0,
+                "tokensReset": "PT0S"
+            },
+            "usage": {
+                "promptTokens": 86,
+                "completionTokens": 0,
+                "generationTokens": 10,
+                "totalTokens": 96,
+                "nativeUsage": null
+            },
+            "promptMetadata": [],
+            "empty": true
+        },
+        "results": [
+            {
+                "metadata": {
+                    "finishReason": "NULL",
+                    "contentFilters": [],
+                    "empty": true
+                },
+                "output": {
+                    "messageType": "ASSISTANT",
+                    "metadata": {
+                        "finishReason": "NULL",
+                        "role": "ASSISTANT",
+                        "id": "50cae71a-fe80-48ce-8871-a91875dd4100",
+                        "messageType": "ASSISTANT",
+                        "reasoningContent": ""
+                    },
+                    "toolCalls": [],
+                    "media": [],
+                    "text": " 很高兴见到你～"
+                }
+            }
+        ]
+    },
+    {
+        "result": {
+            "metadata": {
+                "finishReason": "NULL",
+                "contentFilters": [],
+                "empty": true
+            },
+            "output": {
+                "messageType": "ASSISTANT",
+                "metadata": {
+                    "finishReason": "NULL",
+                    "role": "ASSISTANT",
+                    "id": "50cae71a-fe80-48ce-8871-a91875dd4100",
+                    "messageType": "ASSISTANT",
+                    "reasoningContent": ""
+                },
+                "toolCalls": [],
+                "media": [],
+                "text": "我是你的数学小"
+            }
+        },
+        "metadata": {
+            "id": "50cae71a-fe80-48ce-8871-a91875dd4100",
+            "model": "",
+            "rateLimit": {
+                "requestsLimit": 0,
+                "requestsRemaining": 0,
+                "requestsReset": "PT0S",
+                "tokensRemaining": 0,
+                "tokensLimit": 0,
+                "tokensReset": "PT0S"
+            },
+            "usage": {
+                "promptTokens": 86,
+                "completionTokens": 0,
+                "generationTokens": 14,
+                "totalTokens": 100,
+                "nativeUsage": null
+            },
+            "promptMetadata": [],
+            "empty": true
+        },
+        "results": [
+            {
+                "metadata": {
+                    "finishReason": "NULL",
+                    "contentFilters": [],
+                    "empty": true
+                },
+                "output": {
+                    "messageType": "ASSISTANT",
+                    "metadata": {
+                        "finishReason": "NULL",
+                        "role": "ASSISTANT",
+                        "id": "50cae71a-fe80-48ce-8871-a91875dd4100",
+                        "messageType": "ASSISTANT",
+                        "reasoningContent": ""
+                    },
+                    "toolCalls": [],
+                    "media": [],
+                    "text": "我是你的数学小"
+                }
+            }
+        ]
+    },
+    {
+        "result": {
+            "metadata": {
+                "finishReason": "NULL",
+                "contentFilters": [],
+                "empty": true
+            },
+            "output": {
+                "messageType": "ASSISTANT",
+                "metadata": {
+                    "finishReason": "NULL",
+                    "role": "ASSISTANT",
+                    "id": "50cae71a-fe80-48ce-8871-a91875dd4100",
+                    "messageType": "ASSISTANT",
+                    "reasoningContent": ""
+                },
+                "toolCalls": [],
+                "media": [],
+                "text": "助手老师。今天想"
+            }
+        },
+        "metadata": {
+            "id": "50cae71a-fe80-48ce-8871-a91875dd4100",
+            "model": "",
+            "rateLimit": {
+                "requestsLimit": 0,
+                "requestsRemaining": 0,
+                "requestsReset": "PT0S",
+                "tokensRemaining": 0,
+                "tokensLimit": 0,
+                "tokensReset": "PT0S"
+            },
+            "usage": {
+                "promptTokens": 86,
+                "completionTokens": 0,
+                "generationTokens": 19,
+                "totalTokens": 105,
+                "nativeUsage": null
+            },
+            "promptMetadata": [],
+            "empty": true
+        },
+        "results": [
+            {
+                "metadata": {
+                    "finishReason": "NULL",
+                    "contentFilters": [],
+                    "empty": true
+                },
+                "output": {
+                    "messageType": "ASSISTANT",
+                    "metadata": {
+                        "finishReason": "NULL",
+                        "role": "ASSISTANT",
+                        "id": "50cae71a-fe80-48ce-8871-a91875dd4100",
+                        "messageType": "ASSISTANT",
+                        "reasoningContent": ""
+                    },
+                    "toolCalls": [],
+                    "media": [],
+                    "text": "助手老师。今天想"
+                }
+            }
+        ]
+    },
+    {
+        "result": {
+            "metadata": {
+                "finishReason": "NULL",
+                "contentFilters": [],
+                "empty": true
+            },
+            "output": {
+                "messageType": "ASSISTANT",
+                "metadata": {
+                    "finishReason": "NULL",
+                    "role": "ASSISTANT",
+                    "id": "50cae71a-fe80-48ce-8871-a91875dd4100",
+                    "messageType": "ASSISTANT",
+                    "reasoningContent": ""
+                },
+                "toolCalls": [],
+                "media": [],
+                "text": "学点有趣的数学知识"
+            }
+        },
+        "metadata": {
+            "id": "50cae71a-fe80-48ce-8871-a91875dd4100",
+            "model": "",
+            "rateLimit": {
+                "requestsLimit": 0,
+                "requestsRemaining": 0,
+                "requestsReset": "PT0S",
+                "tokensRemaining": 0,
+                "tokensLimit": 0,
+                "tokensReset": "PT0S"
+            },
+            "usage": {
+                "promptTokens": 86,
+                "completionTokens": 0,
+                "generationTokens": 24,
+                "totalTokens": 110,
+                "nativeUsage": null
+            },
+            "promptMetadata": [],
+            "empty": true
+        },
+        "results": [
+            {
+                "metadata": {
+                    "finishReason": "NULL",
+                    "contentFilters": [],
+                    "empty": true
+                },
+                "output": {
+                    "messageType": "ASSISTANT",
+                    "metadata": {
+                        "finishReason": "NULL",
+                        "role": "ASSISTANT",
+                        "id": "50cae71a-fe80-48ce-8871-a91875dd4100",
+                        "messageType": "ASSISTANT",
+                        "reasoningContent": ""
+                    },
+                    "toolCalls": [],
+                    "media": [],
+                    "text": "学点有趣的数学知识"
+                }
+            }
+        ]
+    },
+    {
+        "result": {
+            "metadata": {
+                "finishReason": "NULL",
+                "contentFilters": [],
+                "empty": true
+            },
+            "output": {
+                "messageType": "ASSISTANT",
+                "metadata": {
+                    "finishReason": "NULL",
+                    "role": "ASSISTANT",
+                    "id": "50cae71a-fe80-48ce-8871-a91875dd4100",
+                    "messageType": "ASSISTANT",
+                    "reasoningContent": ""
+                },
+                "toolCalls": [],
+                "media": [],
+                "text": "吗？或者你有什么数学"
+            }
+        },
+        "metadata": {
+            "id": "50cae71a-fe80-48ce-8871-a91875dd4100",
+            "model": "",
+            "rateLimit": {
+                "requestsLimit": 0,
+                "requestsRemaining": 0,
+                "requestsReset": "PT0S",
+                "tokensRemaining": 0,
+                "tokensLimit": 0,
+                "tokensReset": "PT0S"
+            },
+            "usage": {
+                "promptTokens": 86,
+                "completionTokens": 0,
+                "generationTokens": 30,
+                "totalTokens": 116,
+                "nativeUsage": null
+            },
+            "promptMetadata": [],
+            "empty": true
+        },
+        "results": [
+            {
+                "metadata": {
+                    "finishReason": "NULL",
+                    "contentFilters": [],
+                    "empty": true
+                },
+                "output": {
+                    "messageType": "ASSISTANT",
+                    "metadata": {
+                        "finishReason": "NULL",
+                        "role": "ASSISTANT",
+                        "id": "50cae71a-fe80-48ce-8871-a91875dd4100",
+                        "messageType": "ASSISTANT",
+                        "reasoningContent": ""
+                    },
+                    "toolCalls": [],
+                    "media": [],
+                    "text": "吗？或者你有什么数学"
+                }
+            }
+        ]
+    },
+    {
+        "result": {
+            "metadata": {
+                "finishReason": "NULL",
+                "contentFilters": [],
+                "empty": true
+            },
+            "output": {
+                "messageType": "ASSISTANT",
+                "metadata": {
+                    "finishReason": "NULL",
+                    "role": "ASSISTANT",
+                    "id": "50cae71a-fe80-48ce-8871-a91875dd4100",
+                    "messageType": "ASSISTANT",
+                    "reasoningContent": ""
+                },
+                "toolCalls": [],
+                "media": [],
+                "text": "问题需要我帮忙解答"
+            }
+        },
+        "metadata": {
+            "id": "50cae71a-fe80-48ce-8871-a91875dd4100",
+            "model": "",
+            "rateLimit": {
+                "requestsLimit": 0,
+                "requestsRemaining": 0,
+                "requestsReset": "PT0S",
+                "tokensRemaining": 0,
+                "tokensLimit": 0,
+                "tokensReset": "PT0S"
+            },
+            "usage": {
+                "promptTokens": 86,
+                "completionTokens": 0,
+                "generationTokens": 35,
+                "totalTokens": 121,
+                "nativeUsage": null
+            },
+            "promptMetadata": [],
+            "empty": true
+        },
+        "results": [
+            {
+                "metadata": {
+                    "finishReason": "NULL",
+                    "contentFilters": [],
+                    "empty": true
+                },
+                "output": {
+                    "messageType": "ASSISTANT",
+                    "metadata": {
+                        "finishReason": "NULL",
+                        "role": "ASSISTANT",
+                        "id": "50cae71a-fe80-48ce-8871-a91875dd4100",
+                        "messageType": "ASSISTANT",
+                        "reasoningContent": ""
+                    },
+                    "toolCalls": [],
+                    "media": [],
+                    "text": "问题需要我帮忙解答"
+                }
+            }
+        ]
+    },
+    {
+        "result": {
+            "metadata": {
+                "finishReason": "NULL",
+                "contentFilters": [],
+                "empty": true
+            },
+            "output": {
+                "messageType": "ASSISTANT",
+                "metadata": {
+                    "finishReason": "NULL",
+                    "role": "ASSISTANT",
+                    "id": "50cae71a-fe80-48ce-8871-a91875dd4100",
+                    "messageType": "ASSISTANT",
+                    "reasoningContent": ""
+                },
+                "toolCalls": [],
+                "media": [],
+                "text": "的吗？\uD83D\uDE0A"
+            }
+        },
+        "metadata": {
+            "id": "50cae71a-fe80-48ce-8871-a91875dd4100",
+            "model": "",
+            "rateLimit": {
+                "requestsLimit": 0,
+                "requestsRemaining": 0,
+                "requestsReset": "PT0S",
+                "tokensRemaining": 0,
+                "tokensLimit": 0,
+                "tokensReset": "PT0S"
+            },
+            "usage": {
+                "promptTokens": 86,
+                "completionTokens": 0,
+                "generationTokens": 39,
+                "totalTokens": 125,
+                "nativeUsage": null
+            },
+            "promptMetadata": [],
+            "empty": true
+        },
+        "results": [
+            {
+                "metadata": {
+                    "finishReason": "NULL",
+                    "contentFilters": [],
+                    "empty": true
+                },
+                "output": {
+                    "messageType": "ASSISTANT",
+                    "metadata": {
+                        "finishReason": "NULL",
+                        "role": "ASSISTANT",
+                        "id": "50cae71a-fe80-48ce-8871-a91875dd4100",
+                        "messageType": "ASSISTANT",
+                        "reasoningContent": ""
+                    },
+                    "toolCalls": [],
+                    "media": [],
+                    "text": "的吗？\uD83D\uDE0A"
+                }
+            }
+        ]
+    },
+    {
+        "result": {
+            "metadata": {
+                "finishReason": "NULL",
+                "contentFilters": [],
+                "empty": true
+            },
+            "output": {
+                "messageType": "ASSISTANT",
+                "metadata": {
+                    "finishReason": "NULL",
+                    "role": "ASSISTANT",
+                    "id": "50cae71a-fe80-48ce-8871-a91875dd4100",
+                    "messageType": "ASSISTANT",
+                    "reasoningContent": ""
+                },
+                "toolCalls": [],
+                "media": [],
+                "text": "\n\n（比如："
+            }
+        },
+        "metadata": {
+            "id": "50cae71a-fe80-48ce-8871-a91875dd4100",
+            "model": "",
+            "rateLimit": {
+                "requestsLimit": 0,
+                "requestsRemaining": 0,
+                "requestsReset": "PT0S",
+                "tokensRemaining": 0,
+                "tokensLimit": 0,
+                "tokensReset": "PT0S"
+            },
+            "usage": {
+                "promptTokens": 86,
+                "completionTokens": 0,
+                "generationTokens": 43,
+                "totalTokens": 129,
+                "nativeUsage": null
+            },
+            "promptMetadata": [],
+            "empty": true
+        },
+        "results": [
+            {
+                "metadata": {
+                    "finishReason": "NULL",
+                    "contentFilters": [],
+                    "empty": true
+                },
+                "output": {
+                    "messageType": "ASSISTANT",
+                    "metadata": {
+                        "finishReason": "NULL",
+                        "role": "ASSISTANT",
+                        "id": "50cae71a-fe80-48ce-8871-a91875dd4100",
+                        "messageType": "ASSISTANT",
+                        "reasoningContent": ""
+                    },
+                    "toolCalls": [],
+                    "media": [],
+                    "text": "\n\n（比如："
+                }
+            }
+        ]
+    },
+    {
+        "result": {
+            "metadata": {
+                "finishReason": "NULL",
+                "contentFilters": [],
+                "empty": true
+            },
+            "output": {
+                "messageType": "ASSISTANT",
+                "metadata": {
+                    "finishReason": "NULL",
+                    "role": "ASSISTANT",
+                    "id": "50cae71a-fe80-48ce-8871-a91875dd4100",
+                    "messageType": "ASSISTANT",
+                    "reasoningContent": ""
+                },
+                "toolCalls": [],
+                "media": [],
+                "text": "计算题、应用"
+            }
+        },
+        "metadata": {
+            "id": "50cae71a-fe80-48ce-8871-a91875dd4100",
+            "model": "",
+            "rateLimit": {
+                "requestsLimit": 0,
+                "requestsRemaining": 0,
+                "requestsReset": "PT0S",
+                "tokensRemaining": 0,
+                "tokensLimit": 0,
+                "tokensReset": "PT0S"
+            },
+            "usage": {
+                "promptTokens": 86,
+                "completionTokens": 0,
+                "generationTokens": 47,
+                "totalTokens": 133,
+                "nativeUsage": null
+            },
+            "promptMetadata": [],
+            "empty": true
+        },
+        "results": [
+            {
+                "metadata": {
+                    "finishReason": "NULL",
+                    "contentFilters": [],
+                    "empty": true
+                },
+                "output": {
+                    "messageType": "ASSISTANT",
+                    "metadata": {
+                        "finishReason": "NULL",
+                        "role": "ASSISTANT",
+                        "id": "50cae71a-fe80-48ce-8871-a91875dd4100",
+                        "messageType": "ASSISTANT",
+                        "reasoningContent": ""
+                    },
+                    "toolCalls": [],
+                    "media": [],
+                    "text": "计算题、应用"
+                }
+            }
+        ]
+    },
+    {
+        "result": {
+            "metadata": {
+                "finishReason": "NULL",
+                "contentFilters": [],
+                "empty": true
+            },
+            "output": {
+                "messageType": "ASSISTANT",
+                "metadata": {
+                    "finishReason": "NULL",
+                    "role": "ASSISTANT",
+                    "id": "50cae71a-fe80-48ce-8871-a91875dd4100",
+                    "messageType": "ASSISTANT",
+                    "reasoningContent": ""
+                },
+                "toolCalls": [],
+                "media": [],
+                "text": "题、图形问题"
+            }
+        },
+        "metadata": {
+            "id": "50cae71a-fe80-48ce-8871-a91875dd4100",
+            "model": "",
+            "rateLimit": {
+                "requestsLimit": 0,
+                "requestsRemaining": 0,
+                "requestsReset": "PT0S",
+                "tokensRemaining": 0,
+                "tokensLimit": 0,
+                "tokensReset": "PT0S"
+            },
+            "usage": {
+                "promptTokens": 86,
+                "completionTokens": 0,
+                "generationTokens": 51,
+                "totalTokens": 137,
+                "nativeUsage": null
+            },
+            "promptMetadata": [],
+            "empty": true
+        },
+        "results": [
+            {
+                "metadata": {
+                    "finishReason": "NULL",
+                    "contentFilters": [],
+                    "empty": true
+                },
+                "output": {
+                    "messageType": "ASSISTANT",
+                    "metadata": {
+                        "finishReason": "NULL",
+                        "role": "ASSISTANT",
+                        "id": "50cae71a-fe80-48ce-8871-a91875dd4100",
+                        "messageType": "ASSISTANT",
+                        "reasoningContent": ""
+                    },
+                    "toolCalls": [],
+                    "media": [],
+                    "text": "题、图形问题"
+                }
+            }
+        ]
+    },
+    {
+        "result": {
+            "metadata": {
+                "finishReason": "NULL",
+                "contentFilters": [],
+                "empty": true
+            },
+            "output": {
+                "messageType": "ASSISTANT",
+                "metadata": {
+                    "finishReason": "NULL",
+                    "role": "ASSISTANT",
+                    "id": "50cae71a-fe80-48ce-8871-a91875dd4100",
+                    "messageType": "ASSISTANT",
+                    "reasoningContent": ""
+                },
+                "toolCalls": [],
+                "media": [],
+                "text": "都可以哦）"
+            }
+        },
+        "metadata": {
+            "id": "50cae71a-fe80-48ce-8871-a91875dd4100",
+            "model": "",
+            "rateLimit": {
+                "requestsLimit": 0,
+                "requestsRemaining": 0,
+                "requestsReset": "PT0S",
+                "tokensRemaining": 0,
+                "tokensLimit": 0,
+                "tokensReset": "PT0S"
+            },
+            "usage": {
+                "promptTokens": 86,
+                "completionTokens": 0,
+                "generationTokens": 54,
+                "totalTokens": 140,
+                "nativeUsage": null
+            },
+            "promptMetadata": [],
+            "empty": true
+        },
+        "results": [
+            {
+                "metadata": {
+                    "finishReason": "NULL",
+                    "contentFilters": [],
+                    "empty": true
+                },
+                "output": {
+                    "messageType": "ASSISTANT",
+                    "metadata": {
+                        "finishReason": "NULL",
+                        "role": "ASSISTANT",
+                        "id": "50cae71a-fe80-48ce-8871-a91875dd4100",
+                        "messageType": "ASSISTANT",
+                        "reasoningContent": ""
+                    },
+                    "toolCalls": [],
+                    "media": [],
+                    "text": "都可以哦）"
+                }
+            }
+        ]
+    },
+    {
+        "result": {
+            "metadata": {
+                "finishReason": "STOP",
+                "contentFilters": [],
+                "empty": true
+            },
+            "output": {
+                "messageType": "ASSISTANT",
+                "metadata": {
+                    "finishReason": "STOP",
+                    "role": "ASSISTANT",
+                    "id": "50cae71a-fe80-48ce-8871-a91875dd4100",
+                    "messageType": "ASSISTANT",
+                    "reasoningContent": ""
+                },
+                "toolCalls": [],
+                "media": [],
+                "text": ""
+            }
+        },
+        "metadata": {
+            "id": "50cae71a-fe80-48ce-8871-a91875dd4100",
+            "model": "",
+            "rateLimit": {
+                "requestsLimit": 0,
+                "requestsRemaining": 0,
+                "requestsReset": "PT0S",
+                "tokensRemaining": 0,
+                "tokensLimit": 0,
+                "tokensReset": "PT0S"
+            },
+            "usage": {
+                "promptTokens": 86,
+                "completionTokens": 0,
+                "generationTokens": 54,
+                "totalTokens": 140,
+                "nativeUsage": null
+            },
+            "promptMetadata": [],
+            "empty": true
+        },
+        "results": [
+            {
+                "metadata": {
+                    "finishReason": "STOP",
+                    "contentFilters": [],
+                    "empty": true
+                },
+                "output": {
+                    "messageType": "ASSISTANT",
+                    "metadata": {
+                        "finishReason": "STOP",
+                        "role": "ASSISTANT",
+                        "id": "50cae71a-fe80-48ce-8871-a91875dd4100",
+                        "messageType": "ASSISTANT",
+                        "reasoningContent": ""
+                    },
+                    "toolCalls": [],
+                    "media": [],
+                    "text": ""
+                }
+            }
+        ]
+    }
+]

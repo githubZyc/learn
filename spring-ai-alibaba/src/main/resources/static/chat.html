@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>小学智能辅导老师</title>
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+        #app {
+            display: flex;
+            flex-direction: column;
+            height: 80vh;
+        }
+        #chat-container {
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+        }
+        #response-container {
+            flex-grow: 1;
+            margin-bottom: 10px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 10px;
+            background-color: white;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+        }
+        .message {
+            display: flex;
+            margin-bottom: 15px;
+            animation: fadeIn 0.3s ease-in;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .user-message {
+            justify-content: flex-end;
+        }
+        .ai-message {
+            justify-content: flex-start;
+        }
+        .avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            color: white;
+        }
+        .user-avatar {
+            background-color: #2196F3;
+        }
+        .ai-avatar {
+            background-color: #FF9800;
+        }
+        .message-content {
+            max-width: 70%;
+            padding: 10px 15px;
+            border-radius: 18px;
+            margin: 0 10px;
+            position: relative;
+        }
+        .user-message .message-content {
+            background-color: #2196F3;
+            color: white;
+            border-bottom-right-radius: 4px;
+        }
+        .ai-message .message-content {
+            background-color: #f1f1f1;
+            color: #333;
+            border-bottom-left-radius: 4px;
+        }
+        .timestamp {
+            font-size: 12px;
+            color: #999;
+            margin-top: 5px;
+            text-align: right;
+        }
+        #question-input-area {
+            display: flex;
+            gap: 10px;
+            padding: 10px;
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        #question-input {
+            flex-grow: 1;
+            padding: 10px;
+            font-size: 16px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        #ask-button {
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 4px;
+        }
+        #ask-button:hover {
+            background-color: #45a049;
+        }
+        #ask-button:disabled {
+            background-color: #cccccc;
+            cursor: not-allowed;
+        }
+        .thinking {
+            color: #666;
+            font-style: italic;
+            text-align: center;
+            padding: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div id="app">
+        <h1>小学智能辅导老师</h1>
+        <div id="chat-container">
+            <div id="response-container">
+                <div v-for="message in messages" :key="message.id" :class="['message', message.role + '-message']">
+                    <div :class="['avatar', message.role + '-avatar']">{{ message.role === 'user' ? '我' : '师' }}</div>
+                    <div class="message-content">
+                        {{ message.content }}
+                        <div class="timestamp">{{ message.timestamp }}</div>
+                    </div>
+                </div>
+                <div v-if="isLoading" class="thinking">老师正在思考中...</div>
+            </div>
+            <div id="question-input-area">
+                <input 
+                    type="text" 
+                    id="question-input" 
+                    v-model="question" 
+                    @keypress="handleKeyPress" 
+                    placeholder="请输入你的问题..." 
+                    :disabled="isLoading"
+                >
+                <button 
+                    id="ask-button" 
+                    @click="sendQuestion" 
+                    :disabled="isLoading"
+                >
+                    {{ isLoading ? '思考中...' : '提问' }}
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const { createApp, ref } = Vue;
+        
+        createApp({
+            setup() {
+                const question = ref('');
+                const messages = ref([
+                    {
+                        id: 1,
+                        role: 'ai',
+                        content: '你好呀！👋 很高兴见到你～我是你的数学小助手老师。今天想学点有趣的数学知识吗？或者你有什么数学问题需要我帮忙解答的吗？😊 （比如：计算题、应用题、图形问题都可以哦）',
+                        timestamp: '11:00'
+                    }
+                ]);
+                const isLoading = ref(false);
+
+                // Get current time in HH:MM format
+                const getCurrentTime = () => {
+                    const now = new Date();
+                    return `${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}`;
+                };
+
+                // Add a message to the chat
+                const addMessage = (role, content) => {
+                    messages.value.push({
+                        id: Date.now(),
+                        role,
+                        content,
+                        timestamp: getCurrentTime()
+                    });
+                };
+
+                // Simulate API call with sample responses
+                const simulateApiCall = async (userQuestion) => {
+                    // In a real implementation, this would be:
+
+                    const response = await fetch('/api/question/ask', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'text/plain'
+                        },
+                        body: userQuestion
+                    });
+                    
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+                    
+                    const responseData = await response.json();
+
+                    
+                    // Simulate delay
+                    await new Promise(resolve => setTimeout(resolve, 1000));
+                    
+                    // Sample responses based on question type
+                    const responses = {
+                        '你好': '你好！很高兴见到你！有什么我可以帮助你的吗？',
+                        '加法': '加法是数学中最基本的运算之一。例如：2 + 3 = 5。你想练习一些加法题目吗？',
+                        '减法': '减法是加法的逆运算。例如：5 - 3 = 2。你需要我出一些减法题给你练习吗？',
+                        '乘法': '乘法可以看作是重复的加法。例如：3 × 4 = 12，表示3个4相加。你想学习乘法口诀表吗？',
+                        '除法': '除法是乘法的逆运算。例如：12 ÷ 3 = 4。需要注意的是，0不能作为除数哦！',
+                        '默认': '这是一个很好的问题！让我来详细解释一下。在数学中，我们有很多有趣的规律和方法可以解决这类问题。首先，我们需要理解题目的意思，然后选择合适的方法来解决它。'
+                    };
+                    
+                    // Return a relevant response or default
+                    const lowerQuestion = userQuestion.toLowerCase();
+                    let responseText = responses['默认'];
+                    for (const [key, value] of Object.entries(responses)) {
+                        if (lowerQuestion.includes(key)) {
+                            responseText = value;
+                            break;
+                        }
+                    }
+                    
+                    // Simulate the actual API response format
+                    return [{
+                        result: {
+                            output: {
+                                text: responseText
+                            }
+                        }
+                    }];
+                };
+
+                // Send question to the API
+                const sendQuestion = async () => {
+                    if (!question.value.trim()) {
+                        alert('请输入一个问题');
+                        return;
+                    }
+
+                    const userQuestion = question.value;
+                    
+                    // Add user question to chat
+                    addMessage('user', userQuestion);
+                    
+                    // Clear input
+                    question.value = '';
+                    
+                    // Show loading state
+                    isLoading.value = true;
+                    
+                    try {
+                        // In a real implementation, replace simulateApiCall with actual API call
+                        const responseData = await simulateApiCall(userQuestion);
+                        
+                        let fullResponse = '';
+                        
+                        // Process each item in the response array
+                        for (const item of responseData) {
+                            if (item.results && item.results.length > 0) {
+                                const text = item.results[0].output.text || '';
+                                fullResponse += text;
+                            } else if (item.result && item.result.output) {
+                                const text = item.result.output.text || '';
+                                fullResponse += text;
+                            }
+                        }
+                        
+                        // Add AI response to chat
+                        if (fullResponse) {
+                            addMessage('ai', fullResponse);
+                        } else {
+                            addMessage('ai', '没有收到回复内容。');
+                        }
+                    } catch (error) {
+                        console.error('Error:', error);
+                        addMessage('ai', '发生错误: ' + error.message);
+                    } finally {
+                        isLoading.value = false;
+                    }
+                };
+
+                // Handle Enter key press
+                const handleKeyPress = (event) => {
+                    if (event.key === 'Enter' && !event.shiftKey) {
+                        event.preventDefault();
+                        sendQuestion();
+                    }
+                };
+
+                return {
+                    question,
+                    messages,
+                    isLoading,
+                    sendQuestion,
+                    handleKeyPress
+                };
+            }
+        }).mount('#app');
+    </script>
+</body>
+</html>
