@@ -51,7 +51,7 @@ public class ImageGenerationService {
                 .model("wanx-v1") // Use string literal for model name
                 .prompt(prompt)
                 .n(1) // Generate 1 image
-                .size("256*256") // Image size
+                .size("768*1152") // Image size
                 .build();
 
         // Generate the image
