@@ -118,6 +118,21 @@
             margin-top: 5px;
             text-align: right;
         }
+        /* Styles for structured content */
+        .structured-content {
+            white-space: pre-wrap;
+            line-height: 1.5;
+        }
+        .structured-content ul, .structured-content ol {
+            margin: 10px 0;
+            padding-left: 20px;
+        }
+        .structured-content li {
+            margin: 5px 0;
+        }
+        .structured-content p {
+            margin: 10px 0;
+        }
     </style>
 </head>
 <body>
@@ -137,6 +152,31 @@
         return `${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}`;
     }
 
+    // Format AI response with basic structuring
+    function formatAIResponse(text) {
+        // Convert escaped newlines to actual newlines
+        let formattedText = text.replace(/\\n/g, '\n');
+        
+        // Create paragraphs based on double newlines
+        formattedText = formattedText.replace(/\n\s*\n/g, '</p><p>');
+        
+        // Wrap in paragraph tags if not already structured
+        if (!formattedText.includes('<p>')) {
+            formattedText = '<p>' + formattedText.replace(/\n/g, '</p><p>') + '</p>';
+        }
+        
+        // Handle bullet points (lines starting with - or *)
+        formattedText = formattedText.replace(/<p>([\-\*])\s*(.*?)<\/p>/g, '<ul><li>$2</li></ul>');
+        
+        // Handle numbered lists (lines starting with numbers)
+        formattedText = formattedText.replace(/<p>(\d+\.)\s*(.*?)<\/p>/g, '<ol><li>$2</li></ol>');
+        
+        // Clean up any empty paragraphs
+        formattedText = formattedText.replace(/<p>\s*<\/p>/g, '');
+        
+        return formattedText;
+    }
+
     // Add a message to the chat container
     function addMessage(role, content) {
         const responseContainer = document.getElementById('response-container');
@@ -149,7 +189,13 @@
         
         const contentDiv = document.createElement('div');
         contentDiv.className = 'message-content';
-        contentDiv.textContent = content;
+        
+        // For AI messages, add structured content
+        if (role === 'ai') {
+            contentDiv.innerHTML = '<div class="structured-content">' + formatAIResponse(content) + '</div>';
+        } else {
+            contentDiv.textContent = content;
+        }
         
         const timestampDiv = document.createElement('div');
         timestampDiv.className = 'timestamp';
@@ -164,18 +210,12 @@
         responseContainer.scrollTop = responseContainer.scrollHeight;
     }
 
-    document.getElementById('ask-button').addEventListener('click', async () => {
-        const question = document.getElementById('question-input').value;
-        if (!question.trim()) {
-            alert('请输入一个问题');
-            return;
+    // Send a message (can be used for initial greeting or user messages)
+    async function sendMessage(message, isInitialGreeting = false) {
+        // Add message to chat if it's not the initial greeting (which is already added)
+        if (!isInitialGreeting) {
+            addMessage('user', message);
         }
-
-        // Add user question to chat
-        addMessage('user', question);
-        
-        // Clear input
-        document.getElementById('question-input').value = '';
         
         // Show thinking indicator
         const responseContainer = document.getElementById('response-container');
@@ -192,7 +232,7 @@
                 headers: {
                     'Content-Type': 'text/plain'
                 },
-                body: question
+                body: message
             });
 
             // Remove thinking indicator
@@ -245,6 +285,20 @@
             }
             addMessage('ai', '发生错误: ' + error.message);
         }
+    }
+
+    document.getElementById('ask-button').addEventListener('click', async () => {
+        const question = document.getElementById('question-input').value;
+        if (!question.trim()) {
+            alert('请输入一个问题');
+            return;
+        }
+
+        // Clear input
+        document.getElementById('question-input').value = '';
+        
+        // Send the question
+        await sendMessage(question);
     });
 
     // Allow sending message with Enter key
@@ -252,6 +306,13 @@
         if (e.key === 'Enter') {
             document.getElementById('ask-button').click();
         }
+    });
+    
+    // Add initial greeting when page loads
+    window.addEventListener('DOMContentLoaded', () => {
+        // Add initial greeting from AI
+        const greetingMessage = "你好！我是你的小学智能辅导老师。我可以帮助你解答数学、语文等方面的问题。请问有什么我可以帮你的吗？";
+        addMessage('ai', greetingMessage);
     });
 </script>
 </body>
