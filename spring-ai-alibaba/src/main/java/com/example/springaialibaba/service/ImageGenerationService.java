@@ -68,6 +68,7 @@ public class ImageGenerationService {
             !result.getOutput().getResults().isEmpty()) {
             
             String imageUrl = result.getOutput().getResults().get(0).get("url");
+            System.out.println("Image URL: " + imageUrl);
             return imageUrl;
         }
         
@@ -86,12 +87,9 @@ public class ImageGenerationService {
             if (problemDescription == null || problemDescription.trim().isEmpty()) {
                 return null;
             }
-            
-            String prompt = "Create a clear, educational illustration for a math problem: " + problemDescription + 
-                           ". The image should be suitable for elementary school students (grades 1-6). " +
-                           "Include visual elements like shapes, numbers, or objects that help illustrate the problem. " +
-                           "Keep the design simple, colorful, and easy to understand.";
-            
+            System.out.println("为数学问题:"+problemDescription);
+            String prompt = "为数学问题:“" + problemDescription + "“创作一幅清晰易懂的教育插图。该图像应适合小学一至六年级学生使用加入形状、数字或物体等视觉元素来辅助说明问题保持设计简洁、色彩丰富且易于理解";
+
             return generateImage(prompt, sessionId);
         } catch (Exception e) {
             // Log the error and return null
