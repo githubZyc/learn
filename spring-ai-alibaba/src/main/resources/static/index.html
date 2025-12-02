@@ -219,6 +219,9 @@
         // Convert escaped newlines to actual newlines
         let formattedText = text.replace(/\\n/g, '\n');
         
+        // Handle image URLs
+        formattedText = formattedText.replace(/\[IMAGE_URL:(.*?)\]/g, '<img src="$1" alt="Generated Image" style="max-width: 100%; height: auto; margin: 10px 0;">');
+        
         // Create paragraphs based on double newlines
         formattedText = formattedText.replace(/\n\s*\n/g, '</p><p>');
         

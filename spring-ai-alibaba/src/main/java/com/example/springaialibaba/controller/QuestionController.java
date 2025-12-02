@@ -22,8 +22,17 @@ public class QuestionController {
     }
 
     @PostMapping("/ask")
-    public Mono<List<ChatResponse>> askQuestion(@RequestBody String question, 
+    public Mono<List<ChatResponse>> askQuestion(@RequestBody(required = false) String question, 
                                                @RequestParam(required = false, defaultValue = "default") String sessionId) {
+        // Debug logging
+        System.out.println("Received question: " + question);
+        System.out.println("Received sessionId: " + sessionId);
+        
+        // Handle case where question might be in request parameter instead of body
+        if (question == null || question.isEmpty()) {
+            System.err.println("Warning: Received empty question");
+            return Mono.just(java.util.Collections.emptyList());
+        }
         return questionService.askQuestion(question, sessionId);
     }
 

@@ -26,23 +26,61 @@ public class QuestionServiceImpl implements QuestionService {
     private final DashScopeChatModel dashScopeChatModel;
     private final Map<String, TeachingMethod> teachingMethods;
     private final ConversationManager conversationManager;
+    private final ImageGenerationService imageGenerationService;
 
     @Autowired
     public QuestionServiceImpl(DashScopeChatModel dashScopeChatModel, 
                                ExplanationMethod explanationMethod,
                                ExampleMethod exampleMethod,
                                ExerciseMethod exerciseMethod,
-                               ConversationManager conversationManager) {
+                               ConversationManager conversationManager,
+                               ImageGenerationService imageGenerationService) {
         this.dashScopeChatModel = dashScopeChatModel;
         this.teachingMethods = new HashMap<>();
         this.teachingMethods.put(explanationMethod.getName(), explanationMethod);
         this.teachingMethods.put(exampleMethod.getName(), exampleMethod);
         this.teachingMethods.put(exerciseMethod.getName(), exerciseMethod);
         this.conversationManager = conversationManager;
+        this.imageGenerationService = imageGenerationService;
+    }
+
+    /**
+     * Safely extract text content from a ChatResponse object
+     * @param response The ChatResponse object
+     * @return The extracted text content or null if not found
+     */
+    private String extractTextFromResponse(ChatResponse response) {
+        if (response == null) {
+            return null;
+        }
+        
+        // Try different possible structures for the response
+        if (response.getResult() != null) {
+            if (response.getResult().getOutput() != null) {
+                // Try to get text directly
+                if (response.getResult().getOutput().getText() != null) {
+                    return response.getResult().getOutput().getText();
+                }
+                // Try to get content
+                if (response.getResult().getOutput().getText() != null) {
+                    return response.getResult().getOutput().getText();
+                }
+            }
+            // Try to get text directly from result
+            if (response.getResult().getOutput().getText() != null) {
+                return response.getResult().getOutput().getText();
+            }
+        }
+        
+        return null;
     }
 
     @Override
     public Mono<List<ChatResponse>> askQuestion(String question, String sessionId) {
+        // Debug logging
+        System.out.println("Processing question: " + question);
+        System.out.println("Session ID: " + sessionId);
+        
         // Add user message to conversation history
         conversationManager.addUserMessage(sessionId, question);
         
@@ -51,19 +89,42 @@ public class QuestionServiceImpl implements QuestionService {
         history.add(conversationManager.getSystemMessage(false));
         history.addAll(conversationManager.getRecentMessages(sessionId, 10));
         
+        System.out.println("Sending prompt with " + history.size() + " messages");
+        
         Prompt prompt = new Prompt(history);
         Flux<ChatResponse> responseFlux = dashScopeChatModel.stream(prompt);
         
         return responseFlux.collectList()
                 .doOnNext(responses -> {
+                    System.out.println("Received " + responses.size() + " responses");
+                    
                     // Extract and save assistant response to conversation history
                     StringBuilder responseBuilder = new StringBuilder();
                     for (ChatResponse response : responses) {
                         if (response.getResult() != null && response.getResult().getOutput() != null) {
-                            responseBuilder.append(response.getResult().getOutput().getText());
+                            String content = response.getResult().getOutput().getText();
+                            if (content != null) {
+                                responseBuilder.append(content);
+                            }
                         }
                     }
-                    conversationManager.addAssistantMessage(sessionId, responseBuilder.toString());
+                    
+                    String fullResponse = responseBuilder.toString();
+                    System.out.println("Full response: " + fullResponse);
+                    
+                    // Check if we need to generate an image
+                    if (fullResponse.contains("[IMAGE_PLACEHOLDER]")) {
+                        System.out.println("Detected IMAGE_PLACEHOLDER, generating image...");
+                        // Generate an image for the math problem
+                        String imageUrl = imageGenerationService.generateMathProblemImage(question, sessionId);
+                        if (imageUrl != null) {
+                            // Replace placeholder with actual image URL
+                            fullResponse = fullResponse.replace("[IMAGE_PLACEHOLDER]", 
+                                "[IMAGE_URL:" + imageUrl + "]");
+                        }
+                    }
+                    
+                    conversationManager.addAssistantMessage(sessionId, fullResponse);
                 })
                 .onErrorReturn(java.util.Collections.emptyList());
     }
@@ -103,15 +164,48 @@ public class QuestionServiceImpl implements QuestionService {
                         // Extract and save assistant response to conversation history
                         StringBuilder responseBuilder = new StringBuilder();
                         for (ChatResponse response : responses) {
-                            if (response.getResult() != null && response.getResult().getOutput() != null) {
-                                responseBuilder.append(response.getResult().getOutput().getText());
+                            // Safely extract text content from the response
+                            String textContent = extractTextFromResponse(response);
+                            if (textContent != null) {
+                                responseBuilder.append(textContent);
                             }
                         }
-                        conversationManager.addAssistantMessage(sessionId, responseBuilder.toString());
+                        
+                        String fullResponse = responseBuilder.toString();
+                        
+                        // Check if we need to generate an image
+                        if (fullResponse.contains("[IMAGE_PLACEHOLDER]")) {
+                            try {
+                                // Generate an image for the math problem
+                                String imageUrl = imageGenerationService.generateMathProblemImage(question, sessionId);
+                                if (imageUrl != null) {
+                                    // Replace placeholder with actual image URL
+                                    fullResponse = fullResponse.replace("[IMAGE_PLACEHOLDER]", 
+                                        "[IMAGE_URL:" + imageUrl + "]");
+                                }
+                            } catch (Exception e) {
+                                // Log the error but continue with the text response
+                                System.err.println("Error generating image in askQuestionWithImage: " + e.getMessage());
+                                e.printStackTrace();
+                                // Remove the placeholder so the user doesn't see it
+                                fullResponse = fullResponse.replace("[IMAGE_PLACEHOLDER]", "");
+                            }
+                        }
+                        
+                        conversationManager.addAssistantMessage(sessionId, fullResponse);
                     })
-                    .onErrorReturn(java.util.Collections.emptyList());
+                    .onErrorResume(throwable -> {
+                        // Log the error and return empty list
+                        System.err.println("Error in askQuestionWithImage: " + throwable.getMessage());
+                        throwable.printStackTrace();
+                        conversationManager.addAssistantMessage(sessionId, "抱歉，我在处理您的图片问题时遇到了一些困难。请稍后再试。");
+                        return Mono.just(new ArrayList<>());
+                    });
         } catch (Exception e) {
-            return Mono.error(e);
+            System.err.println("Exception in askQuestionWithImage: " + e.getMessage());
+            e.printStackTrace();
+            conversationManager.addAssistantMessage(sessionId, "抱歉，我在处理您的图片问题时遇到了一些困难。请稍后再试。");
+            return Mono.just(new ArrayList<>());
         }
     }
 

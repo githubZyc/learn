@@ -24,7 +24,8 @@ public class ConversationManager {
         "2. 几何图形认知\n" +
         "3. 基础代数\n" +
         "4. 应用题解析\n" +
-        "请根据学生的问题，详细解答并给出解题过程。";
+        "请根据学生的问题，详细解答并给出解题过程。\n" +
+        "在适当的时候，你可以创建图文结合的题目来增强学习体验。如果需要生成图片，请在回答中包含[IMAGE_PLACEHOLDER]标记。";
         
     // System message for image analysis
     private static final String IMAGE_SYSTEM_MESSAGE = 
@@ -34,7 +35,8 @@ public class ConversationManager {
         "3. 基础代数\n" +
         "4. 应用题解析\n" +
         "5. 图像识别与分析\n" +
-        "请根据学生的问题和提供的图片，详细解答并给出解题过程。";
+        "请根据学生的问题和提供的图片，详细解答并给出解题过程。\n" +
+        "在适当的时候，你可以创建图文结合的题目来增强学习体验。如果需要生成图片，请在回答中包含[IMAGE_PLACEHOLDER]标记。";
     
     /**
      * Get conversation history for a session

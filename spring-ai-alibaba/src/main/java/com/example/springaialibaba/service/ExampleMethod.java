@@ -18,11 +18,15 @@ public class ExampleMethod implements TeachingMethod {
 
     private final DashScopeChatModel dashScopeChatModel;
     private final ConversationManager conversationManager;
+    private final ImageGenerationService imageGenerationService;
 
     @Autowired
-    public ExampleMethod(DashScopeChatModel dashScopeChatModel, ConversationManager conversationManager) {
+    public ExampleMethod(DashScopeChatModel dashScopeChatModel, 
+                       ConversationManager conversationManager,
+                       ImageGenerationService imageGenerationService) {
         this.dashScopeChatModel = dashScopeChatModel;
         this.conversationManager = conversationManager;
+        this.imageGenerationService = imageGenerationService;
     }
 
     @Override
@@ -33,6 +37,37 @@ public class ExampleMethod implements TeachingMethod {
     @Override
     public String getDescription() {
         return "提供相关示例";
+    }
+
+    /**
+     * Safely extract text content from a ChatResponse object
+     * @param response The ChatResponse object
+     * @return The extracted text content or null if not found
+     */
+    private String extractTextFromResponse(ChatResponse response) {
+        if (response == null) {
+            return null;
+        }
+        
+        // Try different possible structures for the response
+        if (response.getResult() != null) {
+            if (response.getResult().getOutput() != null) {
+                // Try to get text directly
+                if (response.getResult().getOutput().getText() != null) {
+                    return response.getResult().getOutput().getText();
+                }
+                // Try to get content
+                if (response.getResult().getOutput().getText() != null) {
+                    return response.getResult().getOutput().getText();
+                }
+            }
+            // Try to get text directly from result
+            if (response.getResult().getOutput().getText() != null) {
+                return response.getResult().getOutput().getText();
+            }
+        }
+        
+        return null;
     }
 
     @Override
@@ -47,7 +82,8 @@ public class ExampleMethod implements TeachingMethod {
         
         // Get conversation history (limit to last 10 messages to prevent context overflow)
         List<Message> history = new ArrayList<>();
-        String systemMessage = "你是一个小学1-6年级的智能辅导老师。请为学生提供与问题相关的具体示例，帮助他们更好地理解和掌握知识点。请参考之前的对话历史来提供连贯的解答。";
+        String systemMessage = "你是一个小学1-6年级的智能辅导老师。请为学生提供与问题相关的具体示例，帮助他们更好地理解和掌握知识点。请参考之前的对话历史来提供连贯的解答。" +
+                              "在适当的时候，你可以创建图文结合的示例来增强学习体验。如果需要生成图片，请在回答中包含[IMAGE_PLACEHOLDER]标记。";
         history.add(new SystemMessage(systemMessage));
         history.addAll(conversationManager.getRecentMessages(sessionId, 10));
         
@@ -59,11 +95,35 @@ public class ExampleMethod implements TeachingMethod {
                     // Extract and save assistant response to conversation history
                     StringBuilder responseBuilder = new StringBuilder();
                     for (ChatResponse response : responses) {
-                        if (response.getResult() != null && response.getResult().getOutput() != null) {
-                            responseBuilder.append(response.getResult().getOutput().getText());
+                        // Safely extract text content from the response
+                        String textContent = extractTextFromResponse(response);
+                        if (textContent != null) {
+                            responseBuilder.append(textContent);
                         }
                     }
-                    conversationManager.addAssistantMessage(sessionId, responseBuilder.toString());
+                    
+                    String fullResponse = responseBuilder.toString();
+                    
+                    // Check if we need to generate an image
+                    if (fullResponse.contains("[IMAGE_PLACEHOLDER]")) {
+                        try {
+                            // Generate an image for the example
+                            String imageUrl = imageGenerationService.generateMathProblemImage(input, sessionId);
+                            if (imageUrl != null) {
+                                // Replace placeholder with actual image URL
+                                fullResponse = fullResponse.replace("[IMAGE_PLACEHOLDER]", 
+                                    "[IMAGE_URL:" + imageUrl + "]");
+                            }
+                        } catch (Exception e) {
+                            // Log the error but continue with the text response
+                            System.err.println("Error generating image in ExampleMethod: " + e.getMessage());
+                            e.printStackTrace();
+                            // Remove the placeholder so the user doesn't see it
+                            fullResponse = fullResponse.replace("[IMAGE_PLACEHOLDER]", "");
+                        }
+                    }
+                    
+                    conversationManager.addAssistantMessage(sessionId, fullResponse);
                 })
                 .onErrorReturn(java.util.Collections.emptyList());
     }
