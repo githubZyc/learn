@@ -90,7 +90,8 @@ public class ImageGenerationService {
             System.out.println("为数学问题:"+problemDescription);
             String prompt = "为数学问题:“" + problemDescription + "“创作一幅清晰易懂的教育插图。该图像应适合小学一至六年级学生使用加入形状、数字或物体等视觉元素来辅助说明问题保持设计简洁、色彩丰富且易于理解";
 
-            return generateImage(prompt, sessionId);
+            return "";
+            //return generateImage(prompt, sessionId);
         } catch (Exception e) {
             // Log the error and return null
             System.err.println("Error generating image: " + e.getMessage());
