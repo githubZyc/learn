@@ -24,7 +24,8 @@
         <module>spring-mvc</module>
         <module>wework-service</module>
         <module>gather</module>
-        <module>shiro-test</module>
+<!--        <module>shiro-test</module>-->
+<!--        <module>crawl-qeecc</module>-->
     </modules>
     <!-- 所有依赖包版本 -->
     <properties>
