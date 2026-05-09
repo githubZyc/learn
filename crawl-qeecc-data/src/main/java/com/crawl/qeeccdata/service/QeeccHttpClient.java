@@ -178,18 +178,31 @@ public class QeeccHttpClient {
 
     /**
      * 下载文件到本地 (流式写入, 模拟浏览器请求头绕过 CDN 防盗链)
+     *
+     * 防盗链策略:
+     * - 同域请求: 携带 Referer (站点自身需要)
+     * - 第三方 CDN (如 kuwo.cn): 不发送 Referer, 模拟浏览器地址栏直接访问
+     *   浏览器直接输入URL访问时不携带Referer, CDN 允许此类请求通过
      */
     public boolean downloadFile(String fileUrl, java.nio.file.Path targetPath, String referer) {
         try {
-            HttpRequest request = HttpRequest.newBuilder()
+            // 智能处理 Referer: CDN 域名不发送 Referer, 模拟浏览器地址栏直接访问
+            String effectiveReferer = resolveEffectiveReferer(fileUrl, referer);
+
+            HttpRequest.Builder requestBuilder = HttpRequest.newBuilder()
                     .uri(URI.create(fileUrl))
                     .header("User-Agent", BROWSER_UA)
-                    .header("Referer", baseUrl + "/")
                     .header("Accept", "*/*")
                     .header("Accept-Language", "zh-CN,zh;q=0.9,en;q=0.8")
                     .header("Range", "bytes=0-")
-                    .GET()
-                    .build();
+                    .GET();
+
+            // 仅同域请求才携带 Referer; CDN 请求不发送, 模拟浏览器地址栏直接访问
+            if (effectiveReferer != null) {
+                requestBuilder.header("Referer", effectiveReferer);
+            }
+
+            HttpRequest request = requestBuilder.build();
 
             // 先下载到 .tmp 文件
             java.nio.file.Path tempFile = java.nio.file.Path.of(targetPath + ".tmp");
@@ -206,11 +219,37 @@ public class QeeccHttpClient {
             } else {
                 java.nio.file.Files.deleteIfExists(tempFile);
                 System.out.println("[HttpClient] 下载失败 HTTP " + status + ": " + fileUrl);
+                return false;
             }
         } catch (Exception e) {
             System.out.println("[HttpClient] 下载异常: " + fileUrl + " → " + e.getMessage());
+            return false;
         }
-        return false;
+    }
+
+    /**
+     * 解析下载时应该使用的 Referer
+     * - 同域请求: 使用传入的 referer (站点自身需要)
+     * - 第三方 CDN: 返回 null, 不发送 Referer, 模拟浏览器地址栏直接访问
+     *   浏览器直接输入URL时不携带Referer, CDN防盗链允许无Referer请求通过,
+     *   但会拦截携带第三方Referer(如 qeecc.com)的请求返回403
+     */
+    private String resolveEffectiveReferer(String fileUrl, String referer) {
+        try {
+            String fileHost = URI.create(fileUrl).getHost();
+            String refererHost = referer != null ? URI.create(referer).getHost() : null;
+
+            // 同域 → 使用原始 referer
+            if (refererHost != null && fileHost != null && fileHost.equalsIgnoreCase(refererHost)) {
+                return referer;
+            }
+
+            // 第三方 CDN → 不发送 Referer, 模拟浏览器地址栏直接访问
+            return null;
+        } catch (Exception e) {
+            // URL 解析失败时, 也不发送 Referer
+            return null;
+        }
     }
 
 

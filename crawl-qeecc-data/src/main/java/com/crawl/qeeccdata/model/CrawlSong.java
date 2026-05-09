@@ -58,6 +58,14 @@ public record CrawlSong(
     }
 
     /**
+     * 清除 Play API 结果 (用于 403 重试时重新获取)
+     */
+    public CrawlSong withoutPlayResult() {
+        return new CrawlSong(songId, songName, singer, source, sourceDetail, href, fullText,
+                null, null, 0, localAudioFile, localPicFile, fileSize, downloadTime);
+    }
+
+    /**
      * 是否已下载
      */
     public boolean isDownloaded() {

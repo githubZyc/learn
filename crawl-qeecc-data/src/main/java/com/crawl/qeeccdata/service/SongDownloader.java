@@ -38,6 +38,9 @@ public class SongDownloader {
         this.downloadSemaphore = new Semaphore(3); // 默认3, @Value注入后不生效, 在init里重设
     }
 
+    /** 下载 403 时的最大重试次数 (每次重新获取播放链接) */
+    private static final int MAX_DOWNLOAD_RETRIES = 2;
+
     /**
      * 下载一首歌曲: Play API + 音频下载 + 封面下载 + metadata 保存
      * 返回下载后的 CrawlSong (填充了 Layer2+Layer3 数据)
@@ -59,16 +62,8 @@ public class SongDownloader {
         try {
             // Layer2: 获取播放链接
             if (!song.hasPlayResult()) {
-                if (onProgress != null) onProgress.accept("获取播放链接: " + song.songName() + " - " + song.singer());
-                QeeccHttpClient.PlayResult playResult = httpClient.getPlayUrl(song.songId());
-                if (playResult == null) {
-                    System.out.println("[Downloader] 获取播放链接失败: " + song.songId());
-                    progress.incrementStat("playApiFail");
-                    return song;
-                }
-                song = song.withPlayResult(playResult.mp3Url(), playResult.pic(), playResult.lkid());
-                progress.markPlayUrlFetched(song.songId());
-                httpClient.rateLimit();
+                song = fetchPlayUrl(song, progress, onProgress);
+                if (!song.hasPlayResult()) return song;
             }
 
             // 确保版块目录存在
@@ -78,7 +73,7 @@ public class SongDownloader {
                 Files.createDirectories(sectionPath);
             }
 
-            // Layer3: 下载音频文件
+            // Layer3: 下载音频文件 (含 403 重试: 重新获取播放链接)
             String mp3Url = song.mp3Url();
             String ext = determineExtension(mp3Url);
             String audioFileName = song.songId() + ext;
@@ -88,6 +83,28 @@ public class SongDownloader {
                 if (onProgress != null) onProgress.accept("下载: " + song.songName() + " (" + ext + ")");
                 boolean success = httpClient.downloadFile(mp3Url, audioPath,
                         httpClient.getBaseUrl() + "/song/" + song.songId() + ".html");
+
+                // 403 重试: 可能是 CDN token 过期, 重新获取播放链接后重试
+                int retryCount = 0;
+                while (!success && retryCount < MAX_DOWNLOAD_RETRIES) {
+                    retryCount++;
+                    System.out.println("[Downloader] 下载 403 重试 (" + retryCount + "/" + MAX_DOWNLOAD_RETRIES + "): 重新获取播放链接 " + song.songId());
+                    song = song.withoutPlayResult(); // 清除旧播放结果
+                    song = fetchPlayUrl(song, progress, onProgress);
+                    if (!song.hasPlayResult()) break;
+
+                    mp3Url = song.mp3Url();
+                    ext = determineExtension(mp3Url);
+                    audioFileName = song.songId() + ext;
+                    audioPath = sectionPath.resolve(audioFileName);
+                    if (Files.exists(audioPath)) {
+                        success = true;
+                        break;
+                    }
+                    success = httpClient.downloadFile(mp3Url, audioPath,
+                            httpClient.getBaseUrl() + "/song/" + song.songId() + ".html");
+                }
+
                 if (!success) {
                     System.out.println("[Downloader] 音频下载失败: " + song.songId());
                     progress.incrementStat("downloadFail");
@@ -125,6 +142,24 @@ public class SongDownloader {
             downloadSemaphore.release();
         }
 
+        return song;
+    }
+
+    /**
+     * 获取播放链接 (Layer2)
+     */
+    private CrawlSong fetchPlayUrl(CrawlSong song, CrawlProgressManager progress,
+                                   java.util.function.Consumer<String> onProgress) {
+        if (onProgress != null) onProgress.accept("获取播放链接: " + song.songName() + " - " + song.singer());
+        QeeccHttpClient.PlayResult playResult = httpClient.getPlayUrl(song.songId());
+        if (playResult == null) {
+            System.out.println("[Downloader] 获取播放链接失败: " + song.songId());
+            progress.incrementStat("playApiFail");
+            return song;
+        }
+        song = song.withPlayResult(playResult.mp3Url(), playResult.pic(), playResult.lkid());
+        progress.markPlayUrlFetched(song.songId());
+        httpClient.rateLimit();
         return song;
     }
 
