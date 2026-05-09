@@ -34,10 +34,10 @@ public class SongCacheService {
 
     @PostConstruct
     public void init() {
-        // 异步预加载，避免阻塞启动
-        Thread.ofVirtual().start(() -> {
-            loadHotSongs();
-        });
+//        // 异步预加载，避免阻塞启动
+//        Thread.ofVirtual().start(() -> {
+//            loadHotSongs();
+//        });
     }
 
     private void loadHotSongs() {

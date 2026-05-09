@@ -29,7 +29,7 @@ public class SongRagService {
 
     @PostConstruct
     public void init() {
-        loadSongs();
+        //loadSongs();
     }
 
     private void loadSongs() {
