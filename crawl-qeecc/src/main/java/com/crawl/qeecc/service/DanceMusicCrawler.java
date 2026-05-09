@@ -8,6 +8,7 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -28,7 +29,8 @@ public class DanceMusicCrawler {
     @Autowired
     private SiteStructureAnalyzer siteStructureAnalyzer;
 
-    private static final String TARGET_SITE_URL = "http://www.qeecc.com/list/new.html";
+    @Value("${qeecc.site.url}")
+    private String targetSiteUrl;
     
     /**
      * 查找DJ舞曲相关的链接
@@ -38,14 +40,14 @@ public class DanceMusicCrawler {
 
         try {
             // 首先获取主页内容
-            WebPageFetcher.FetchResult fetchResult = webPageFetcher.fetchPageContent(TARGET_SITE_URL);
+            WebPageFetcher.FetchResult fetchResult = webPageFetcher.fetchPageContent(targetSiteUrl);
             
             if (!fetchResult.isSuccess()) {
                 return categories;
             }
 
             // 如果发生了重定向，使用重定向后的URL
-            String actualUrl = fetchResult.isRedirected() ? fetchResult.getRedirectUrl() : TARGET_SITE_URL;
+            String actualUrl = fetchResult.isRedirected() ? fetchResult.getRedirectUrl() : targetSiteUrl;
             Document document = fetchResult.getDocument();
 
             // 在文档中查找DJ舞曲相关链接
