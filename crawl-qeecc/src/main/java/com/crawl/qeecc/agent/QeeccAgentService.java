@@ -35,8 +35,8 @@ public class QeeccAgentService {
         if (!ragResults.isEmpty()) {
             ragContext.append("\n【知识库检索结果】\n");
             for (SongRagService.SongResult result : ragResults) {
-                ragContext.append(String.format("- 歌曲: %s | 分类: %s | 相似度: %.4f\n",
-                        result.title(), result.category(), result.score()));
+                ragContext.append(String.format("- 歌曲: %s | 歌手: %s | 相似度: %.4f\n",
+                        result.title(), result.singer(), result.score()));
             }
             ragContext.append("\n请结合以上检索结果回答用户问题。");
         }
