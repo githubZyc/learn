@@ -1,23 +1,30 @@
 package com.crawl.qeeccdata.controller;
 
 import com.crawl.qeeccdata.service.QeeccDataCrawler;
-import org.springframework.web.bind.annotation.*;
+import com.crawl.qeeccdata.service.SearchService;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 import java.util.Map;
 
 /**
  * 爬取控制 API
- * 触发爬取、查看进度、列出可用版块
+ * 触发爬取、查看进度、列出可用版块、搜索歌曲、下载歌曲
  */
 @RestController
 @RequestMapping("/api/crawl")
 public class CrawlController {
 
     private final QeeccDataCrawler crawler;
+    private final SearchService searchService;
 
-    public CrawlController(QeeccDataCrawler crawler) {
+    public CrawlController(QeeccDataCrawler crawler, SearchService searchService) {
         this.crawler = crawler;
+        this.searchService = searchService;
     }
 
     /**
@@ -54,5 +61,25 @@ public class CrawlController {
     @GetMapping("/sections")
     public List<Map<String, String>> getSections() {
         return crawler.getAvailableSections();
+    }
+
+    // ==================== 搜索 & 下载 ====================
+
+    /**
+     * 搜索歌曲
+     * GET /api/crawl/search?keyword=江南
+     */
+    @GetMapping("/search")
+    public List<SearchService.SearchSongResult> search(@RequestParam String keyword) {
+        return searchService.search(keyword);
+    }
+
+    /**
+     * 下载指定歌曲
+     * POST /api/crawl/download?songId=c2R3eW4
+     */
+    @PostMapping("/download")
+    public SearchService.DownloadResult download(@RequestParam String songId) {
+        return searchService.download(songId);
     }
 }

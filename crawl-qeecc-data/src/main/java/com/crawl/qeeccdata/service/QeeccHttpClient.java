@@ -135,6 +135,59 @@ public class QeeccHttpClient {
         return null;
     }
 
+    /**
+     * 获取搜索页 Document (两步访问绕过 JS 重定向反爬)
+     *
+     * 搜索页 /so/{keyword}.html 的反爬机制:
+     * 1. 首次请求返回 JS 重定向 + Set-Cookie (session 认证)
+     * 2. 必须带该 Cookie 再次请求, 才能获取真实搜索结果
+     */
+    public Document fetchSearchPage(String url) {
+        try {
+            // Step1: 首次请求 → 触发 JS 重定向 + 获取搜索专用 Cookie
+            HttpRequest step1 = HttpRequest.newBuilder()
+                    .uri(URI.create(url))
+                    .header("User-Agent", BROWSER_UA)
+                    .header("Referer", baseUrl + "/")
+                    .GET()
+                    .build();
+
+            HttpResponse<String> step1Resp = httpClient.send(step1, HttpResponse.BodyHandlers.ofString());
+
+            // 提取搜索专用 Cookie 并合并到缓存
+            List<String> step1Cookies = step1Resp.headers().allValues("Set-Cookie");
+            StringBuilder searchCookieSb = new StringBuilder();
+            for (String cookie : step1Cookies) {
+                String[] parts = cookie.split(";");
+                if (parts.length > 0) {
+                    if (!searchCookieSb.isEmpty()) searchCookieSb.append("; ");
+                    searchCookieSb.append(parts[0].trim());
+                }
+            }
+            String searchCookie = searchCookieSb.toString();
+
+            // Step2: 带 Cookie 二次请求 → 获取真实搜索结果
+            HttpRequest step2 = HttpRequest.newBuilder()
+                    .uri(URI.create(url))
+                    .header("User-Agent", BROWSER_UA)
+                    .header("Referer", baseUrl + "/")
+                    .header("Cookie", searchCookie)
+                    .GET()
+                    .build();
+
+            HttpResponse<String> step2Resp = httpClient.send(step2, HttpResponse.BodyHandlers.ofString());
+
+            if (step2Resp.statusCode() == 200) {
+                return Jsoup.parse(step2Resp.body());
+            } else {
+                System.out.println("[HttpClient] 搜索页二次请求失败 HTTP " + step2Resp.statusCode() + ": " + url);
+            }
+        } catch (Exception e) {
+            System.out.println("[HttpClient] 搜索页请求异常: " + url + " → " + e.getMessage());
+        }
+        return null;
+    }
+
     // ==================== Play API ====================
 
     /**

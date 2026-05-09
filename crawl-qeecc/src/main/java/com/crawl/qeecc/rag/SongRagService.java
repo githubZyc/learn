@@ -35,7 +35,7 @@ public class SongRagService {
     private void loadSongs() {
         try {
             // 使用热门关键词预加载歌曲数据到向量存储
-            String[] hotKeywords = {"江南", "晴天", "海阔天空", "成都", "偏爱", "泡沫", "十年"};
+            String[] hotKeywords = {"江南", "晴天"};
             for (String keyword : hotKeywords) {
                 List<QeeccSearchService.SearchResult> results = searchService.searchSongs(keyword);
                 for (QeeccSearchService.SearchResult sr : results) {
