@@ -26,6 +26,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.ThreadLocalRandom;
 
 /**
  * 核心爬取引擎 - 三层分离编排
@@ -294,16 +295,15 @@ public class QeeccDataCrawler {
         }
 
         try {
-            log("========== 开始批量修复歌词 ==========");
+            log("========== 开始批量修复歌词 (串行+随机延迟, 防封IP) ==========");
             long startTime = System.currentTimeMillis();
 
-            AtomicInteger repaired = new AtomicInteger(0);
-            AtomicInteger skipped = new AtomicInteger(0);
-            AtomicInteger failed = new AtomicInteger(0);
-            AtomicInteger noAudio = new AtomicInteger(0);
+            int repaired = 0;
+            int skipped = 0;
+            int failed = 0;
+            int noAudio = 0;
 
             Path storeDir = Paths.get(storePath);
-            List<CompletableFuture<Void>> futures = new ArrayList<>();
 
             // 扫描所有版块目录
             List<Path> sectionDirs;
@@ -328,17 +328,18 @@ public class QeeccDataCrawler {
                     List<Map<String, Object>> metas = objectMapper.readValue(json, listOfMapsType());
                     log("[歌词修复] 扫描版块 [" + sectionName + "]: 共 " + metas.size() + " 首歌曲");
 
+                    boolean metaChanged = false;
                     int needRepair = 0;
                     for (Map<String, Object> meta : metas) {
                         // 跳过已有歌词的
                         if (meta.get("localLrcFile") != null) {
-                            skipped.incrementAndGet();
+                            skipped++;
                             continue;
                         }
 
                         // 跳过未下载音频的
                         if (meta.get("localAudioFile") == null) {
-                            noAudio.incrementAndGet();
+                            noAudio++;
                             continue;
                         }
 
@@ -347,80 +348,56 @@ public class QeeccDataCrawler {
                         if (songId == null) continue;
 
                         needRepair++;
-                        // 多线程下载歌词
-                        futures.add(CompletableFuture.runAsync(() -> {
-                            try {
-                                log("[歌词修复] 开始下载歌词: " + songName + " (" + songId + ")");
-                                // 全局速率控制
-                                httpClient.globalRateLimit();
-                                String lrcContent = httpClient.getLyrics(songId);
-                                if (lrcContent != null) {
-                                    Path lrcPath = sectionDir.resolve(songId + ".lrc");
-                                    Files.writeString(lrcPath, lrcContent);
-                                    meta.put("localLrcFile", songId + ".lrc");
-                                    repaired.incrementAndGet();
-                                    log("[歌词修复] ✓ 歌词下载成功: " + songName + " (" + songId + ") → " + lrcPath.getFileName());
-                                } else {
-                                    failed.incrementAndGet();
-                                    log("[歌词修复] ✗ 歌词不可用: " + songName + " (" + songId + ") - 接口返回空");
-                                }
-                            } catch (Exception e) {
-                                failed.incrementAndGet();
-                                log("[歌词修复] ✗ 歌词下载异常: " + songId + " → " + e.getMessage());
+                        // 串行下载歌词，每次请求前随机等待 2~5 秒，防止被封 IP
+                        try {
+                            long delaySec = 2 + ThreadLocalRandom.current().nextLong(3001); // 2000ms ~ 5000ms
+                            log("[歌词修复] 等待 " + (delaySec / 1000.0) + " 秒后下载: " + songName + " (" + songId + ")");
+                            Thread.sleep(delaySec);
+
+                            log("[歌词修复] 开始下载歌词: " + songName + " (" + songId + ")");
+                            String lrcContent = httpClient.getLyrics(songId);
+                            if (lrcContent != null) {
+                                Path lrcPath = sectionDir.resolve(songId + ".lrc");
+                                Files.writeString(lrcPath, lrcContent);
+                                meta.put("localLrcFile", songId + ".lrc");
+                                metaChanged = true;
+                                repaired++;
+                                log("[歌词修复] ✓ 歌词下载成功: " + songName + " (" + songId + ") → " + lrcPath.getFileName());
+                            } else {
+                                failed++;
+                                log("[歌词修复] ✗ 歌词不可用: " + songName + " (" + songId + ") - 接口返回空");
                             }
-                        }, crawlExecutor));
+                        } catch (InterruptedException e) {
+                            Thread.currentThread().interrupt();
+                            log("[歌词修复] 歌词修复被中断");
+                            break;
+                        } catch (Exception e) {
+                            failed++;
+                            log("[歌词修复] ✗ 歌词下载异常: " + songId + " → " + e.getMessage());
+                        }
                     }
-                    log("[歌词修复] 版块 [" + sectionName + "]: 需修复 " + needRepair + " 首, 已有歌词 " + (metas.size() - needRepair - noAudio.get()) + " 首");
+                    log("[歌词修复] 版块 [" + sectionName + "]: 需修复 " + needRepair + " 首, 已有歌词 " + (metas.size() - needRepair - noAudio) + " 首");
+
+                    // 实时写回该版块的 metadata.json
+                    if (metaChanged) {
+                        objectMapper.writeValue(metaFile.toFile(), metas);
+                        log("[歌词修复] 更新 metadata: " + sectionName);
+                    }
                 } catch (Exception e) {
                     log("[歌词修复] 读取 metadata 失败: " + sectionName + " → " + e.getMessage());
                 }
             }
 
-            log("[歌词修复] 等待 " + futures.size() + " 个歌词下载任务完成...");
-            // 等待所有歌词下载完成
-            CompletableFuture.allOf(futures.toArray(new CompletableFuture[0])).join();
-            log("[歌词修复] 所有歌词下载任务已完成");
-
-            // 统一写回所有 metadata.json (因为歌词已下载完毕, 现在更新文件)
-            int metadataUpdated = 0;
-            for (Path sectionDir : sectionDirs) {
-                Path metaFile = sectionDir.resolve("metadata.json");
-                if (!Files.exists(metaFile)) continue;
-                try {
-                    String json = Files.readString(metaFile);
-                    List<Map<String, Object>> metas = objectMapper.readValue(json, listOfMapsType());
-                    boolean changed = false;
-                    for (Map<String, Object> meta : metas) {
-                        String songId = (String) meta.get("songId");
-                        if (songId == null) continue;
-                        // 如果 .lrc 文件已存在但 metadata 未记录, 则补上
-                        if (meta.get("localLrcFile") == null && Files.exists(sectionDir.resolve(songId + ".lrc"))) {
-                            meta.put("localLrcFile", songId + ".lrc");
-                            changed = true;
-                        }
-                    }
-                    if (changed) {
-                        objectMapper.writeValue(metaFile.toFile(), metas);
-                        metadataUpdated++;
-                        log("[歌词修复] 更新 metadata: " + sectionDir.getFileName());
-                    }
-                } catch (Exception e) {
-                    log("[歌词修复] 更新 metadata 失败: " + sectionDir.getFileName() + " → " + e.getMessage());
-                }
-            }
-
             long elapsed = System.currentTimeMillis() - startTime;
-            log("========== 歌词修复完成: 修复=" + repaired.get() + " 已有歌词=" + skipped.get()
-                    + " 无音频=" + noAudio.get() + " 失败=" + failed.get()
-                    + ", 更新metadata=" + metadataUpdated
+            log("========== 歌词修复完成: 修复=" + repaired + " 已有歌词=" + skipped
+                    + " 无音频=" + noAudio + " 失败=" + failed
                     + ", 耗时 " + (elapsed / 1000) + " 秒 ==========");
 
             return Map.of(
-                    "repaired", repaired.get(),
-                    "skipped", skipped.get(),
-                    "noAudio", noAudio.get(),
-                    "failed", failed.get(),
-                    "metadataUpdated", metadataUpdated,
+                    "repaired", repaired,
+                    "skipped", skipped,
+                    "noAudio", noAudio,
+                    "failed", failed,
                     "elapsed", elapsed / 1000 + "s"
             );
         } finally {

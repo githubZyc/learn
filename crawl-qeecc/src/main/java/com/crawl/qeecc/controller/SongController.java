@@ -200,4 +200,50 @@ public class SongController {
             return ResponseEntity.internalServerError().build();
         }
     }
+
+    /**
+     * 获取本地歌曲歌词（LRC格式，支持子目录查找）
+     * GET /api/songs/lyrics/{songId}
+     */
+    @GetMapping(value = "/lyrics/{songId}", produces = MediaType.TEXT_PLAIN_VALUE + ";charset=UTF-8")
+    public ResponseEntity<String> getLyrics(@PathVariable String songId) {
+        Path basePath = Paths.get(storePath);
+        Path lrcPath = null;
+
+        try {
+            List<Path> subDirs = Files.list(basePath)
+                    .filter(Files::isDirectory)
+                    .collect(Collectors.toList());
+
+            for (Path dir : subDirs) {
+                Path lrc = dir.resolve(songId + ".lrc");
+                if (Files.exists(lrc)) { lrcPath = lrc; break; }
+            }
+        } catch (IOException e) {
+            return ResponseEntity.internalServerError().build();
+        }
+
+        if (lrcPath == null || !Files.exists(lrcPath)) {
+            return ResponseEntity.notFound().build();
+        }
+
+        try {
+            String lrcContent = Files.readString(lrcPath, StandardCharsets.UTF_8);
+            return ResponseEntity.ok()
+                    .contentType(MediaType.parseMediaType("text/plain;charset=UTF-8"))
+                    .body(lrcContent);
+        } catch (IOException e) {
+            return ResponseEntity.internalServerError().build();
+        }
+    }
+
+    /**
+     * 触发本地音乐库重新扫描
+     * POST /api/songs/scan
+     */
+    @PostMapping("/scan")
+    public Map<String, Object> scanLocal() {
+        // 本地歌曲列表从 metadata.json 实时读取，无需额外刷新
+        return Map.of("status", "ok", "message", "扫描完成");
+    }
 }
