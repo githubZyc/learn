@@ -40,7 +40,7 @@ public class CrawlController {
      * 爬取所有版块
      * POST /api/crawl/all
      */
-    @PostMapping("/all")
+    @GetMapping("/all")
     public Map<String, Object> crawlAll() {
         return crawler.crawlAll();
     }
@@ -81,5 +81,32 @@ public class CrawlController {
     @PostMapping("/download")
     public SearchService.DownloadResult download(@RequestParam String songId) {
         return searchService.download(songId);
+    }
+
+    // ==================== 歌词修复 ====================
+
+    /**
+     * 批量修复已下载歌曲的歌词
+     * POST /api/crawl/repair-lyrics
+     * 扫描所有 metadata.json, 对缺少歌词的已下载歌曲批量下载 .lrc 文件
+     */
+    @GetMapping("/repair-lyrics")
+    public Map<String, Object> repairLyrics() {
+        System.out.println("[Controller] 收到批量修复歌词请求");
+        Map<String, Object> result = crawler.repairLyrics();
+        System.out.println("[Controller] 批量修复歌词完成: " + result);
+        return result;
+    }
+
+    /**
+     * 单曲补歌词
+     * GET /api/crawl/fetch-lyrics?songId=eWNkbnNkbnh3
+     */
+    @GetMapping("/fetch-lyrics")
+    public Map<String, Object> fetchLyrics(@RequestParam String songId) {
+        System.out.println("[Controller] 收到单曲补歌词请求: songId=" + songId);
+        Map<String, Object> result = crawler.fetchLyrics(songId);
+        System.out.println("[Controller] 单曲补歌词完成: " + result);
+        return result;
     }
 }

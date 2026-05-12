@@ -40,6 +40,9 @@ public class QeeccHttpClient {
     private String cachedCookie = "";
     private long cookieTimestamp = 0;
 
+    /** 全局最后一次请求时间戳, 用于多线程速率控制 */
+    private volatile long lastRequestTimestamp = 0;
+
     /** 完整浏览器 UA, 模拟 Chrome 绕过 CDN 防盗链 */
     private static final String BROWSER_UA = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36";
 
@@ -227,6 +230,51 @@ public class QeeccHttpClient {
         return null;
     }
 
+    // ==================== 歌词 API ====================
+
+    /**
+     * 获取歌曲 LRC 歌词
+     * GET /plug/down.php?ac=music&lk=lrc&id={songId}
+     * 返回标准 LRC 格式文本, 如 [00:01.23]歌词内容
+     */
+    public String getLyrics(String songId) {
+        try {
+            String lrcUrl = baseUrl + "/plug/down.php?ac=music&lk=lrc&id=" + songId;
+            System.out.println("[HttpClient] 请求歌词: " + lrcUrl);
+
+            HttpRequest request = HttpRequest.newBuilder()
+                    .uri(URI.create(lrcUrl))
+                    .header("User-Agent", BROWSER_UA)
+                    .header("Referer", baseUrl + "/song/" + songId + ".html")
+                    .GET()
+                    .build();
+
+            HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+            System.out.println("[HttpClient] 歌词响应 HTTP " + response.statusCode() + ", body长度=" + (response.body() != null ? response.body().length() : 0));
+
+            if (response.statusCode() == 200) {
+                String body = response.body();
+                if (body != null && !body.isEmpty()) {
+                    // 打印前200字符用于调试
+                    String preview = body.length() > 200 ? body.substring(0, 200) : body;
+                    System.out.println("[HttpClient] 歌词内容预览: " + preview);
+                    if (body.contains("[")) {
+                        return body;
+                    } else {
+                        System.out.println("[HttpClient] 歌词内容不含 '[' , 可能非LRC格式");
+                    }
+                } else {
+                    System.out.println("[HttpClient] 歌词响应体为空");
+                }
+            } else {
+                System.out.println("[HttpClient] 歌词请求失败, 响应: " + response.body());
+            }
+        } catch (Exception e) {
+            System.out.println("[HttpClient] 歌词获取异常: " + songId + " → " + e.getMessage());
+        }
+        return null;
+    }
+
     // ==================== 文件下载 ====================
 
     /**
@@ -309,7 +357,8 @@ public class QeeccHttpClient {
     // ==================== 速率控制 ====================
 
     /**
-     * 请求间隔控制, 避免触发反爬
+     * 单线程请求间隔控制, 避免触发反爬
+     * 每个调用线程独立等待 requestIntervalMs
      */
     public void rateLimit() {
         try {
@@ -317,6 +366,29 @@ public class QeeccHttpClient {
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
         }
+    }
+
+    /**
+     * 全局速率控制 - 多线程环境下确保任意两次请求之间保持最小间隔
+     *
+     * 与 rateLimit() 不同, 此方法追踪全局最后一次请求时间, 而非每线程独立等待。
+     * 使用 synchronized 串行化等待, 防止多线程并发导致请求频率叠加触发反爬。
+     *
+     * 效果: 即使 4 线程并发调用, Play API 请求仍保持 ~1次/requestIntervalMs 的频率,
+     * 但文件下载(CDN 不同域名)可并发执行, 兼顾速率安全与下载效率。
+     */
+    public synchronized void globalRateLimit() {
+        long now = System.currentTimeMillis();
+        long elapsed = now - lastRequestTimestamp;
+        long waitMs = requestIntervalMs - elapsed;
+        if (waitMs > 0) {
+            try {
+                Thread.sleep(waitMs);
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+            }
+        }
+        lastRequestTimestamp = System.currentTimeMillis();
     }
 
     // ==================== 辅助方法 ====================

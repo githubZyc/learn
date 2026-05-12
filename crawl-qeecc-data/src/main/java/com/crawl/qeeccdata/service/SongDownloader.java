@@ -12,7 +12,6 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.util.*;
-import java.util.concurrent.Semaphore;
 
 /**
  * Layer2 + Layer3 - 元数据采集 + 音频下载
@@ -24,18 +23,13 @@ public class SongDownloader {
     @Value("${qeecc.local.store-path:/Volumes/files/my/qeecc}")
     private String storePath;
 
-    @Value("${qeecc.crawl.max-concurrent-downloads:3}")
-    private int maxConcurrentDownloads;
-
     private final QeeccHttpClient httpClient;
     private final ObjectMapper objectMapper;
-    private final Semaphore downloadSemaphore;
 
     public SongDownloader(QeeccHttpClient httpClient) {
         this.httpClient = httpClient;
         this.objectMapper = new ObjectMapper();
         this.objectMapper.enable(SerializationFeature.INDENT_OUTPUT);
-        this.downloadSemaphore = new Semaphore(3); // 默认3, @Value注入后不生效, 在init里重设
     }
 
     /** 下载 403 时的最大重试次数 (每次重新获取播放链接) */
@@ -49,13 +43,6 @@ public class SongDownloader {
                                   java.util.function.Consumer<String> onProgress) {
         // 跳过已下载
         if (progress.isDownloaded(song.songId())) {
-            return song;
-        }
-
-        try {
-            downloadSemaphore.acquire();
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
             return song;
         }
 
@@ -125,7 +112,23 @@ public class SongDownloader {
                 }
             }
 
-            song = song.withDownloadResult(audioFileName, picFileName, fileSize, downloadTime);
+            // 下载歌词(自动同步, 与音频同名 .lrc)
+            String lrcFileName = null;
+            Path lrcPath = sectionPath.resolve(song.songId() + ".lrc");
+            if (!Files.exists(lrcPath)) {
+                String lrcContent = httpClient.getLyrics(song.songId());
+                if (lrcContent != null) {
+                    Files.writeString(lrcPath, lrcContent);
+                    lrcFileName = song.songId() + ".lrc";
+                    if (onProgress != null) onProgress.accept("歌词下载: " + song.songName());
+                } else {
+                    System.out.println("[Downloader] 歌词不可用: " + song.songId());
+                }
+            } else {
+                lrcFileName = song.songId() + ".lrc";
+            }
+
+            song = song.withDownloadResult(audioFileName, picFileName, lrcFileName, fileSize, downloadTime);
             progress.markDownloaded(song.songId());
             progress.incrementStat("downloaded");
 
@@ -138,8 +141,6 @@ public class SongDownloader {
         } catch (Exception e) {
             System.out.println("[Downloader] 下载异常: " + song.songId() + " → " + e.getMessage());
             progress.incrementStat("downloadError");
-        } finally {
-            downloadSemaphore.release();
         }
 
         return song;
@@ -147,9 +148,13 @@ public class SongDownloader {
 
     /**
      * 获取播放链接 (Layer2)
+     * 使用 globalRateLimit() 在请求前等待, 确保多线程下 Play API 请求间隔
      */
     private CrawlSong fetchPlayUrl(CrawlSong song, CrawlProgressManager progress,
                                    java.util.function.Consumer<String> onProgress) {
+        // 全局速率控制: 请求前等待, 防止多线程并发导致高频请求触发反爬
+        httpClient.globalRateLimit();
+
         if (onProgress != null) onProgress.accept("获取播放链接: " + song.songName() + " - " + song.singer());
         QeeccHttpClient.PlayResult playResult = httpClient.getPlayUrl(song.songId());
         if (playResult == null) {
@@ -159,7 +164,6 @@ public class SongDownloader {
         }
         song = song.withPlayResult(playResult.mp3Url(), playResult.pic(), playResult.lkid());
         progress.markPlayUrlFetched(song.songId());
-        httpClient.rateLimit();
         return song;
     }
 
@@ -197,6 +201,7 @@ public class SongDownloader {
             meta.put("sourceDetail", song.sourceDetail());
             meta.put("localAudioFile", song.localAudioFile());
             meta.put("localPicFile", song.localPicFile());
+            meta.put("localLrcFile", song.localLrcFile());
             meta.put("fileSize", song.fileSize());
             meta.put("downloadTime", song.downloadTime());
             metas.add(meta);

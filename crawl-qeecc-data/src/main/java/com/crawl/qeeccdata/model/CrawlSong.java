@@ -21,6 +21,7 @@ public record CrawlSong(
         // Layer3 填充
         String localAudioFile,  // 本地音频文件名: songId.m4a
         String localPicFile,    // 本地封面文件名: songId.jpg
+        String localLrcFile,    // 本地歌词文件名: songId.lrc
         long fileSize,          // 文件大小(字节)
         String downloadTime     // 下载完成时间
 ) {
@@ -30,7 +31,7 @@ public record CrawlSong(
     public static CrawlSong forIndex(String songId, String songName, String singer,
                                      String source, String sourceDetail, String href, String fullText) {
         return new CrawlSong(songId, songName, singer, source, sourceDetail, href, fullText,
-                null, null, 0, null, null, 0, null);
+                null, null, 0, null, null, null, 0, null);
     }
 
     /**
@@ -38,16 +39,16 @@ public record CrawlSong(
      */
     public CrawlSong withPlayResult(String mp3Url, String pic, int lkid) {
         return new CrawlSong(songId, songName, singer, source, sourceDetail, href, fullText,
-                mp3Url, pic, lkid, localAudioFile, localPicFile, fileSize, downloadTime);
+                mp3Url, pic, lkid, localAudioFile, localPicFile, localLrcFile, fileSize, downloadTime);
     }
 
     /**
-     * Layer3 填充: 加入下载结果
+     * Layer3 填充: 加入下载结果 (含歌词)
      */
     public CrawlSong withDownloadResult(String localAudioFile, String localPicFile,
-                                        long fileSize, String downloadTime) {
+                                        String localLrcFile, long fileSize, String downloadTime) {
         return new CrawlSong(songId, songName, singer, source, sourceDetail, href, fullText,
-                mp3Url, pic, lkid, localAudioFile, localPicFile, fileSize, downloadTime);
+                mp3Url, pic, lkid, localAudioFile, localPicFile, localLrcFile, fileSize, downloadTime);
     }
 
     /**
@@ -62,7 +63,7 @@ public record CrawlSong(
      */
     public CrawlSong withoutPlayResult() {
         return new CrawlSong(songId, songName, singer, source, sourceDetail, href, fullText,
-                null, null, 0, localAudioFile, localPicFile, fileSize, downloadTime);
+                null, null, 0, localAudioFile, localPicFile, localLrcFile, fileSize, downloadTime);
     }
 
     /**
